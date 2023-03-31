@@ -1,0 +1,130 @@
+// creating database
+create database Todo_list;
+//get binto the created database
+use Todo_list;
+//Show table to check the table in database
+show tables;
+//Add table
+create table user_details(user_ID INT PRIMARY KEY, user_name VARCHAR(240) NOT NULL,created_at DATE,created_by VARCHAR(240) NOT NULL,modified_at DATE,modified_by VARCHAR(240),deleted_at DATE,deleted_by VARCHAR(240) NOT NULL);
++-------------+--------------+------+-----+---------+-------+
+| Field       | Type         | Null | Key | Default | Extra |
++-------------+--------------+------+-----+---------+-------+
+| user_ID     | int(11)      | NO   | PRI | NULL    |       |
+| user_name   | varchar(240) | NO   |     | NULL    |       |
+| created_at  | date         | YES  |     | NULL    |       |
+| created_by  | varchar(240) | NO   |     | NULL    |       |
+| modified_at | date         | YES  |     | NULL    |       |
+| modified_by | varchar(240) | YES  |     | NULL    |       |
+| deleted_at  | date         | YES  |     | NULL    |       |
+| deleted_by  | varchar(240) | NO   |     | NULL    |       |
++-------------+--------------+------+-----+---------+-------+
+//insert column details
+ insert into user_details(user_ID,user_name,created_at,created_by,modified_at,modified_by,deleted_at,deleted_by)values(1,'naveen',20230320,'naveen',20230321,'john cena',null,'none');
++---------+-----------+------------+------------+-------------+-------------+------------+------------+
+| user_ID | user_name | created_at | created_by | modified_at | modified_by | deleted_at | deleted_by |
++---------+-----------+------------+------------+-------------+-------------+------------+------------+
+|       1 | naveen    | 2023-03-20 | naveen     | 2023-03-21  | john cena   | NULL       | none       |
++---------+-----------+------------+------------+-------------+-------------+------------+------------+
+1 row in set (0.000 sec)
+//To show the created table
+select * from user_details;
++---------+------------+------------+------------+-------------+-------------+------------+------------+
+| user_ID | user_name  | created_at | created_by | modified_at | modified_by | deleted_at | deleted_by |
++---------+------------+------------+------------+-------------+-------------+------------+------------+
+|       1 | naveen     | 2023-03-20 | naveen     | 2023-03-21  | john cena   | NULL       | none       |
+|       2 | Alice      | 2023-03-20 | Alice      | 2023-03-21  | john cena   | NULL       | none       |
+|       3 | Rocky bhai | 1999-07-17 | Rocky bhai | 2023-03-21  | john cena   | NULL       | none       |
+|       4 | Dhoni      | 1888-07-07 | MSD        | 2020-02-06  | sachin      | NULL       | none       |
++---------+------------+------------+------------+-------------+-------------+------------+------------+
+
+
+//ADD another table in same database
+ create table task_list(
+    -> task_ID INT PRIMARY KEY,
+    -> task VARCHAR(240) NOT NULL,
+    -> user_ID INT NOT NULL,
+    -> foreign key(user_ID) references user_details(user_ID),
+    -> created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    -> created_by VARCHAR(240),
+    -> modified_at DATE,
+    -> modified_by VARCHAR(240),
+    -> deleted_at DATE,
+    -> deleted_by VARCHAR(240));
+//to the the column details
+ explain task_list;
++-------------+--------------+------+-----+---------------------+-------+
+| Field       | Type         | Null | Key | Default             | Extra |
++-------------+--------------+------+-----+---------------------+-------+
+| task_ID     | int(11)      | NO   | PRI | NULL                |       |
+| task        | varchar(240) | NO   |     | NULL                |       |
+| user_ID     | int(11)      | NO   | MUL | NULL                |       |
+| created_at  | datetime     | YES  |     | current_timestamp() |       |
+| created_by  | varchar(240) | YES  |     | NULL                |       |
+| modified_at | date         | YES  |     | NULL                |       |
+| modified_by | varchar(240) | YES  |     | NULL                |       |
+| deleted_at  | date         | YES  |     | NULL                |       |
+| deleted_by  | varchar(240) | YES  |     | NULL                |       |
++-------------+--------------+------+-----+---------------------+-------+
+//to insert column details
+ insert into task_list
+    -> (
+    -> task_ID,
+    -> task,
+    -> user_ID,
+    -> created_by)
+    -> values
+    -> (2,'come home',2,'Ram'),
+    -> (3,'bye bye',3,'ghandhi'),
+    -> (4,'go to office',1,'john cena');
+select * from task_list;
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+
+| task_ID | task         | user_ID | created_at          | created_by | modified_at | modified_by | deleted_at | deleted_by |
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+
+|       1 | go home      |       2 | 2023-03-31 13:11:42 | Ramani     | NULL        | NULL        | NULL       | NULL       |
+|       2 | come home    |       2 | 2023-03-31 13:21:02 | Ram        | NULL        | NULL        | NULL       | NULL       |
+|       3 | bye bye      |       3 | 2023-03-31 13:21:02 | ghandhi    | NULL        | NULL        | NULL       | NULL       |
+|       4 | go to office |       1 | 2023-03-31 13:21:02 | john cena  | NULL        | NULL        | NULL       | NULL       |
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+
+
+//to get the specified values
+ select task from task_list where user_ID = 2;
++-----------+
+| task      |
++-----------+
+| go home   |
+| come home |
++-----------+
+select user_name from user_details where user_ID = 1;
++-----------+
+| user_name |
++-----------+
+| naveen    |
++-----------+
+//To add a new column
+ alter table task_list
+    -> add status INT;
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+--------+
+| task_ID | task         | user_ID | created_at          | created_by | modified_at | modified_by | deleted_at | deleted_by | status |
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+--------+
+|       1 | go home      |       2 | 2023-03-31 13:11:42 | Ramani     | 2023-03-31  | NULL        | NULL       | NULL       |   NULL |
+|       2 | come home    |       2 | 2023-03-31 13:21:02 | Ram        | NULL        | NULL        | NULL       | NULL       |   NULL |
+|       3 | bye bye      |       3 | 2023-03-31 13:21:02 | ghandhi    | NULL        | NULL        | NULL       | NULL       |   NULL |
+|       4 | go to office |       1 | 2023-03-31 13:21:02 | john cena  | NULL        | NULL        | NULL       | NULL       |   NULL |
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+--------+
+
+//Updating the table
+update task_list
+    -> set status = 1
+    -> where task_ID = 4;
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+--------+
+| task_ID | task         | user_ID | created_at          | created_by | modified_at | modified_by | deleted_at | deleted_by | status |
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+--------+
+|       1 | go home      |       2 | 2023-03-31 13:11:42 | Ramani     | 2023-03-31  | NULL        | NULL       | NULL       |   NULL |
+|       2 | come home    |       2 | 2023-03-31 13:21:02 | Ram        | NULL        | NULL        | NULL       | NULL       |   NULL |
+|       3 | bye bye      |       3 | 2023-03-31 13:21:02 | ghandhi    | NULL        | NULL        | NULL       | NULL       |   NULL |
+|       4 | go to office |       1 | 2023-03-31 13:21:02 | john cena  | NULL        | NULL        | NULL       | NULL       |      1 |
++---------+--------------+---------+---------------------+------------+-------------+-------------+------------+------------+--------+
+
+
+
+
