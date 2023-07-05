@@ -1,0 +1,37 @@
+Hash methods
+* hasone()
+* hasMany()
+* belongsTo()
+* belongsToMany()
+
+........../////////
+DELETE QUERY
+DELETE FROM table_name WHERE condition;
+.........////////
+UPDATE QUERY
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+......../////////////
+INNER JOIN:
+SELECT column_name(s)
+FROM table1
+INNER JOIN table2
+ON table1.column_name = table2.column_name;
+........../////////
+LEFT JOIN:
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+LEFT JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+ORDER BY Customers.CustomerName;
+................//////////
+RIGHT JOINS:
+SELECT Orders.OrderID, Employees.LastName, Employees.FirstName
+FROM Orders
+RIGHT JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID
+ORDER BY Orders.OrderID;
+......////
+CROSS JOIN:
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+CROSS JOIN Orders;
