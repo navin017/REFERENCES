@@ -1,0 +1,615 @@
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 1614
+Server version: 11.2.0-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases
+    -> ;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| newdata            |
+| performance_schema |
+| quizapp            |
+| sys                |
++--------------------+
+6 rows in set (0.013 sec)
+
+MariaDB [(none)]> create database student_details;
+Query OK, 1 row affected (0.005 sec)
+
+MariaDB [(none)]> \u student_details;
+ERROR 1049 (42000): Unknown database 'student_details;'
+MariaDB [(none)]> \u student_details
+Database changed
+MariaDB [student_details]> create table students(id INT PRIMARY KEY AUTOINCREMENT, first_name varchar(20) NOT NULL, last_name varchar(20) NOT NULL);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ' first_name varchar(20) NOT NULL, last_name varchar(20) NOT NULL)' at line 1
+MariaDB [student_details]> create table students(id INT PRIMARY KEY AUTO_INCREMENT, first_name varchar(20) NOT NULL, last_name varchar(20) NOT NULL);
+Query OK, 0 rows affected (0.039 sec)
+
+MariaDB [student_details]> DESC students;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
+| first_name | varchar(20) | NO   |     | NULL    |                |
+| last_name  | varchar(20) | NO   |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+3 rows in set (0.032 sec)
+
+MariaDB [student_details]> create table marks(
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL);
+Query OK, 0 rows affected (0.027 sec)
+
+MariaDB [student_details]> desc marks;
++------------+---------+------+-----+---------+-------+
+| Field      | Type    | Null | Key | Default | Extra |
++------------+---------+------+-----+---------+-------+
+| student_id | int(11) | YES  | MUL | NULL    |       |
+| tamil      | int(11) | NO   |     | NULL    |       |
+| english    | int(11) | NO   |     | NULL    |       |
+| maths      | int(11) | NO   |     | NULL    |       |
++------------+---------+------+-----+---------+-------+
+4 rows in set (0.015 sec)
+
+MariaDB [student_details]> insert into students(first_name,last_name)
+    -> values
+    -> ('ganesh','ravi'),
+    -> ('saran','ramani'),
+    -> ('karan','murugan'),
+    -> ('praveen','kandhasamy'),
+    -> ('mano','alagan');
+Query OK, 5 rows affected (0.005 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [student_details]> select * from students
+    -> ;
++----+------------+------------+
+| id | first_name | last_name  |
++----+------------+------------+
+|  1 | ganesh     | ravi       |
+|  2 | saran      | ramani     |
+|  3 | karan      | murugan    |
+|  4 | praveen    | kandhasamy |
+|  5 | mano       | alagan     |
++----+------------+------------+
+5 rows in set (0.000 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (1,60,70,80),
+    -> (2,35,35,35),
+    -> (3,90,20,10),
+    -> (4,50,50,50),
+    -> (5,70,40,73);
+Query OK, 5 rows affected (0.003 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [student_details]> select * from marks;
++------------+-------+---------+-------+
+| student_id | tamil | english | maths |
++------------+-------+---------+-------+
+|          1 |    60 |      70 |    80 |
+|          2 |    35 |      35 |    35 |
+|          3 |    90 |      20 |    10 |
+|          4 |    50 |      50 |    50 |
+|          5 |    70 |      40 |    73 |
++------------+-------+---------+-------+
+5 rows in set (0.000 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> (7,35,35,35),
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '7,35,35,35),' at line 2
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> (7,35,35,35);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '7,35,35,35)' at line 2
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (7,35,35,35);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`student_details`.`marks`, CONSTRAINT `marks_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`))
+MariaDB [student_details]> delete from students where id=2;
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`student_details`.`marks`, CONSTRAINT `marks_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`))
+MariaDB [student_details]> delete from marks where id=2;
+ERROR 1054 (42S22): Unknown column 'id' in 'where clause'
+MariaDB [student_details]> delete from marks where student_id=2;
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [student_details]> select * from marks;
++------------+-------+---------+-------+
+| student_id | tamil | english | maths |
++------------+-------+---------+-------+
+|          1 |    60 |      70 |    80 |
+|          3 |    90 |      20 |    10 |
+|          4 |    50 |      50 |    50 |
+|          5 |    70 |      40 |    73 |
++------------+-------+---------+-------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+------------+
+| id | first_name | last_name  |
++----+------------+------------+
+|  1 | ganesh     | ravi       |
+|  2 | saran      | ramani     |
+|  3 | karan      | murugan    |
+|  4 | praveen    | kandhasamy |
+|  5 | mano       | alagan     |
++----+------------+------------+
+5 rows in set (0.000 sec)
+
+MariaDB [student_details]> delete from students where id=2;
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+------------+
+| id | first_name | last_name  |
++----+------------+------------+
+|  1 | ganesh     | ravi       |
+|  3 | karan      | murugan    |
+|  4 | praveen    | kandhasamy |
+|  5 | mano       | alagan     |
++----+------------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> DELETE invoice, invoice_infos
+    -> FROM invoice
+    -> INNER JOIN invoice_infos ON invoice.invoice_id = invoice_infos.invoice_id
+    -> WHERE invoice.invoice_id = ?;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 4
+MariaDB [student_details]> DELETE students.id,marks.students_id
+    -> from students
+    -> INNER JOIN students on students.id=marks.students_id
+    -> WHERE students.id = 1;
+ERROR 1066 (42000): Not unique table/alias: 'students'
+MariaDB [student_details]> DELETE students.id,marks.students_id
+    -> from students
+    -> INNER JOIN students on marks.students_id=students.id
+    -> WHERE students.id = 1;
+ERROR 1066 (42000): Not unique table/alias: 'students'
+MariaDB [student_details]> select students.id,marks.students_id
+    -> from students
+    -> INNER JOIN students on marks.students_id=students.id;
+ERROR 1066 (42000): Not unique table/alias: 'students'
+MariaDB [student_details]> show tables;
++---------------------------+
+| Tables_in_student_details |
++---------------------------+
+| marks                     |
+| students                  |
++---------------------------+
+2 rows in set (0.002 sec)
+
+MariaDB [student_details]> select * from users;
+ERROR 1146 (42S02): Table 'student_details.users' doesn't exist
+MariaDB [student_details]> select * from students;
++----+------------+------------+
+| id | first_name | last_name  |
++----+------------+------------+
+|  1 | ganesh     | ravi       |
+|  3 | karan      | murugan    |
+|  4 | praveen    | kandhasamy |
+|  5 | mano       | alagan     |
++----+------------+------------+
+4 rows in set (0.001 sec)
+
+MariaDB [student_details]> select * from marks;
++------------+-------+---------+-------+
+| student_id | tamil | english | maths |
++------------+-------+---------+-------+
+|          1 |    60 |      70 |    80 |
+|          3 |    90 |      20 |    10 |
+|          4 |    50 |      50 |    50 |
+|          5 |    70 |      40 |    73 |
++------------+-------+---------+-------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> ALTER table marks DROP COLUMN student_id;
+ERROR 1553 (HY000): Cannot drop index 'student_id': needed in a foreign key constraint
+MariaDB [student_details]> drop table marks;
+Query OK, 0 rows affected (0.033 sec)
+
+MariaDB [student_details]> select * from marks;
+ERROR 1146 (42S02): Table 'student_details.marks' doesn't exist
+MariaDB [student_details]> create table marks(
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> ON DELETE CASCADE,
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'ON DELETE CASCADE,
+tamil INT NOT NULL,
+english INT NOT NULL,
+maths INT NOT NULL)' at line 4
+MariaDB [student_details]> create table marks(
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL);
+Query OK, 0 rows affected (0.023 sec)
+
+MariaDB [student_details]> drop table marks;
+Query OK, 0 rows affected (0.024 sec)
+
+MariaDB [student_details]> create table marks(
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL,
+    -> student_id INT
+    -> FOREIGN KEY(student_id) REFERENCES students(id)
+    -> ON DELETE CASCADE
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FOREIGN KEY(student_id) REFERENCES students(id)
+ON DELETE CASCADE
+)' at line 6
+MariaDB [student_details]> create table marks(
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL,
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> ON DELETE CASCADE);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'ON DELETE CASCADE)' at line 7
+MariaDB [student_details]> create table marks(
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL,
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.023 sec)
+
+MariaDB [student_details]> INSERT INTO marks(
+    -> values
+    -> (1,30,40,50),
+    -> (3,80,90,20);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 4
+MariaDB [student_details]> INSERT INTO marks(student_id,tamil,english,maths)
+    -> values
+    -> (1,30,40,50),
+    -> (3,80,90,20);
+Query OK, 2 rows affected (0.007 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    30 |      40 |    50 |          1 |
+|    80 |      90 |    20 |          3 |
++-------+---------+-------+------------+
+2 rows in set (0.000 sec)
+
+MariaDB [student_details]> delete from students where id = 1;
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+------------+
+| id | first_name | last_name  |
++----+------------+------------+
+|  3 | karan      | murugan    |
+|  4 | praveen    | kandhasamy |
+|  5 | mano       | alagan     |
++----+------------+------------+
+3 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    80 |      90 |    20 |          3 |
++-------+---------+-------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> update marks
+    -> set english = 20
+    -> where first_name = karan;
+ERROR 1054 (42S22): Unknown column 'first_name' in 'where clause'
+MariaDB [student_details]> update students
+    -> set last_name = 'Ravi'
+    -> where first_name = 'praveen';
+Query OK, 1 row affected (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
++----+------------+-----------+
+3 rows in set (0.000 sec)
+
+MariaDB [student_details]> UPDATE marks
+    -> SET tamil = 20
+    -> FROM marks
+    -> WHERE marks.student_id=(SELECT id from students WHERE first_name = 'karan')
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM marks
+WHERE marks.student_id=(SELECT id from students WHERE first_name =...' at line 3
+MariaDB [student_details]> UPDATE marks
+    -> SET tamil = 20
+    -> FROM marks WHERE marks.student_id=(SELECT id from students WHERE first_name = 'karan');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM marks WHERE marks.student_id=(SELECT id from students WHERE first_name =...' at line 3
+MariaDB [student_details]> UPDATE marks
+    -> SET tamil = 20
+    -> FROM marks WHERE marks.3=(SELECT id from students WHERE first_name = 'karan');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM marks WHERE marks.3=(SELECT id from students WHERE first_name = 'karan')' at line 3
+MariaDB [student_details]> UPDATE marks
+    -> SET tamil = 20
+    -> from marks
+    -> WHERE marks.student_id=3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from marks
+WHERE marks.student_id=3' at line 3
+MariaDB [student_details]> UPDATE marks
+    -> SET tamil = 20
+    -> WHERE marks.student_id=3;
+Query OK, 1 row affected (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
++-------+---------+-------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> UPDATE marks
+    -> SET english = 75
+    -> JOIN students ON marks.students_id=students.id
+    -> WHERE students.first_name = 'karan';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'JOIN students ON marks.students_id=students.id
+WHERE students.first_name = 'k...' at line 3
+MariaDB [student_details]> UPDATE marks
+    -> SET english = 75
+    -> FROM marks
+    -> JOIN students ON marks.students_id=students.id
+    -> WHERE students.first_name = 'karan';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM marks
+JOIN students ON marks.students_id=students.id
+WHERE students.firs...' at line 3
+MariaDB [student_details]> SELECT column_name(s)
+    -> FROM table1
+    -> INNER JOIN table2
+    -> ON table1.column_name = table2.column_name;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(s)
+FROM table1
+INNER JOIN table2
+ON table1.column_name = table2.column_name' at line 1
+MariaDB [student_details]> SELECT students
+    -> FROM students
+    -> INNER JOIN marks
+    -> ON students.id = marks.student_id;
+ERROR 1054 (42S22): Unknown column 'students' in 'field list'
+MariaDB [student_details]> SELECT students.id
+    -> FROM students
+    -> INNER JOIN marks
+    -> ON students.id = marks.student_id;
++----+
+| id |
++----+
+|  3 |
++----+
+1 row in set (0.008 sec)
+
+MariaDB [student_details]> SELECT students.id,marks.student_id
+    -> FROM students
+    -> INNER JOIN marks
+    -> ON students.id = marks.student_id;
++----+------------+
+| id | student_id |
++----+------------+
+|  3 |          3 |
++----+------------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> UPDATE marks
+    -> from marks
+    -> INNER JOIN marks
+    -> ON students.id = marks.student_id
+    -> SET tamil = 10
+    -> WHERE students.id.first_name = 'karan';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from marks
+INNER JOIN marks
+ON students.id = marks.student_id
+SET tamil = 10
+...' at line 2
+MariaDB [student_details]> SELECT students.id,marks.student_id
+    ->
+    -> ;
+ERROR 1109 (42S02): Unknown table 'students' in field list
+MariaDB [student_details]> SELECT students.first_name,marks.student_id
+    -> FROM students
+    -> INNER JOIN marks
+    -> ON students.first_name = marks.student_id;
+Empty set, 3 warnings (0.004 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
++----+------------+-----------+
+3 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
++-------+---------+-------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> desc marks;
++------------+---------+------+-----+---------+-------+
+| Field      | Type    | Null | Key | Default | Extra |
++------------+---------+------+-----+---------+-------+
+| tamil      | int(11) | NO   |     | NULL    |       |
+| english    | int(11) | NO   |     | NULL    |       |
+| maths      | int(11) | NO   |     | NULL    |       |
+| student_id | int(11) | YES  | MUL | NULL    |       |
++------------+---------+------+-----+---------+-------+
+4 rows in set (0.014 sec)
+
+MariaDB [student_details]> desc students;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
+| first_name | varchar(20) | NO   |     | NULL    |                |
+| last_name  | varchar(20) | NO   |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+3 rows in set (0.012 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
++----+------------+-----------+
+3 rows in set (0.003 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
++----+------------+-----------+
+4 rows in set (0.001 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+|  7 | naveen     | elango    |
+|  8 | naveen     | elango    |
+|  9 | naveen     | elango    |
+| 10 | naveen     | elango    |
+| 11 | naveen     | elango    |
+| 12 | naveen     | elango    |
++----+------------+-----------+
+10 rows in set (0.001 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+|  7 | naveen     | elango    |
+|  8 | naveen     | elango    |
+|  9 | naveen     | elango    |
+| 10 | naveen     | elango    |
+| 11 | naveen     | elango    |
+| 12 | naveen     | elango    |
+| 13 | naveen     | elango    |
+| 14 | naveen     | elango    |
+| 15 | naveen     | elango    |
+| 16 | naveen     | elango    |
+| 17 | naveen     | elango    |
++----+------------+-----------+
+15 rows in set (0.000 sec)
+
+MariaDB [student_details]> delete from students where id>6;
+Query OK, 11 rows affected (0.012 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
++----+------------+-----------+
+4 rows in set (0.001 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
++-------+---------+-------+------------+
+1 row in set (0.001 sec)
+
+MariaDB [student_details]> SELECT student_id, SUM(tamil,english,maths) from marks GROUPBY(student_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'english,maths) from marks GROUPBY(student_id)' at line 1
+MariaDB [student_details]> SUM maths form marks;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM maths form marks' at line 1
+MariaDB [student_details]> SUM(maths) from Marks;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(maths) from Marks' at line 1
+MariaDB [student_details]> SELECT SUM(maths) from marks;
++------------+
+| SUM(maths) |
++------------+
+|         20 |
++------------+
+1 row in set (0.005 sec)
+
+MariaDB [student_details]> select student_id,SUM(tamil+english+maths) from marks GROUPBY(student_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(student_id)' at line 1
+MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUPBY(student_id) ORDERBY(student_sum) DESC;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(student_id) ORDERBY(student_sum) DESC' at line 1
+MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
++------------+-------------+
+| student_id | student_sum |
++------------+-------------+
+|          3 |         130 |
++------------+-------------+
+1 row in set (0.027 sec)
+
+MariaDB [student_details]> insert into marks(tamil,english,maths,student_id)
+    -> values
+    -> (20,70,60,4),
+    -> (20,100,60,5),
+    -> (20,100,50,6);
+Query OK, 3 rows affected (0.003 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
+|    20 |      70 |    60 |          4 |
+|    20 |     100 |    60 |          5 |
+|    20 |     100 |    50 |          6 |
++-------+---------+-------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
++------------+-------------+
+| student_id | student_sum |
++------------+-------------+
+|          5 |         180 |
+|          6 |         170 |
+|          4 |         150 |
+|          3 |         130 |
++------------+-------------+
+4 rows in set (0.001 sec)
+
+MariaDB [student_details]>
