@@ -1,0 +1,181 @@
+UPDATE marks
+SET tamil = <new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
+WHERE student_id IN (
+  SELECT id
+  FROM students
+  WHERE first_name = '<desired_first_name>'
+);
+const { sequelize } = require('./db-connect');
+const { Sequelize, DataTypes } = require('sequelize');
+
+const studentsDetails = sequelize.define('students', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    first_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    last_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+}, {
+    tableName: 'students',
+    timestamps: false
+});
+
+const Marks = sequelize.define('Marks', {
+    student_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    tamil: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    english: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    maths: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+}, {
+    tableName: 'marks',
+    timestamps: false
+});
+
+studentsDetails.hasMany(Marks, {
+    foreignKey: 'student_id',
+    onDelete: 'CASCADE',
+});
+Marks.belongsTo(studentsDetails, {
+    foreignKey: 'student_id',
+});
+
+module.exports = {
+    Marks,
+    studentsDetails,
+};
+................................................................
+
+const updateMarksByFirstName = async (firstName, newMarksData) => {
+  try {
+    const updatedMarks = await Marks.update(newMarksData, {
+      where: {},
+      include: [
+        {
+          model: studentsDetails,
+          where: { first_name: firstName },
+        },
+      ],
+    });
+
+    return updatedMarks;
+  } catch (error) {
+    // Handle error
+  }
+};
+
+////////////
+const express = require('express');
+const { Marks, studentsDetails } = require('./models'); // Assuming you have the Sequelize models imported
+
+const app = express();
+app.use(express.json());
+
+// Update marks route
+app.put('/marks/:firstName', async (req, res) => {
+  const { firstName } = req.params; // Get the first name from the request parameters
+  const newMarksData = req.body; // Get the new marks data from the request body
+
+  try {
+    const updatedMarks = await Marks.update(newMarksData, {
+      where: {},
+      include: [
+        {
+          model: studentsDetails,
+          where: { first_name: firstName },
+        },
+      ],
+    });
+
+    res.json(updatedMarks);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while updating marks.' });
+  }
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+.....................................................................
+const createDetails = async (fname, lname) => {
+  try {
+    const student = await studentsDetails.create({
+      first_name: fname,
+      last_name: lname,
+    });
+
+    console.log("Student name stored successfully:", student.first_name);
+
+    // Assuming you have the new marks data available
+    const newMarksData = {
+      tamil: 90,
+      english: 85,
+      maths: 95,
+    };
+
+    // Create marks record and associate it with the newly created student
+    await Marks.create(newMarksData);
+
+    // Associate the student with the marks record
+    await student.setMarks(newMarksData);
+
+    console.log("Marks record created and associated with the student.");
+  } catch (err) {
+    console.log("Error occurred:", err);
+  }
+};
+/////////////////
+const express = require('express');
+const { studentsDetails, Marks } = require('./models'); // Assuming you have the Sequelize models imported
+
+const app = express();
+app.use(express.json());
+
+// Create student and marks route
+app.post('/students', async (req, res) => {
+  const { first_name, last_name, marks } = req.body; // Get the first name, last name, and marks data from the request body
+
+  try {
+    // Create student record
+    const student = await studentsDetails.create({
+      first_name,
+      last_name,
+    });
+
+    // Associate marks record with the student
+    const createdMarks = await Marks.create(marks);
+    await student.setMarks(createdMarks);
+
+    res.status(201).json({
+      message: 'Student record created with associated marks.',
+      student,
+      marks: createdMarks,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while creating student and marks records.' });
+  }
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+
