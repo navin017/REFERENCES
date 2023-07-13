@@ -1,0 +1,167 @@
+const getStudents = async () => {
+  try {
+    const result = await studentsDetails.findAll({
+      include: Marks, // Include the associated Marks model
+    });
+
+    return JSON.parse(JSON.stringify(result));
+  } catch (err) {
+    console.log("Error: ", err);
+  }
+};
+'''''''''''''''''''''''''
+const createDetails = async (fname, lname, marks) => {
+  try {
+    const student = await studentsDetails.create({
+      first_name: fname,
+      last_name: lname,
+    });
+
+    console.log("Student name stored successfully:", student.first_name);
+
+    const newMarksData = await Marks.create({
+      tamil: marks.tamil,
+      english: marks.english,
+      maths: marks.maths,
+      student_id: student.id, // Set the student_id for the marks record
+    });
+
+    console.log("Marks record created and associated with the student.");
+  } catch (err) {
+    console.log("Error occurred:", err);
+  }
+};
+........................................
+app.post('/create', async (req, res) => {
+  const { fname, lname, marks } = req.body;
+
+  try {
+    // Create student record and associated marks
+    await createDetails(fname, lname, marks);
+
+    res.status(201).json({
+      student: {
+        fname,
+        lname,
+      },
+      marks,
+    });
+
+    console.log(fname, lname, marks);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while creating student and marks records.' });
+    console.log("Error:", error);
+  }
+});
+'''''''''''''''''''''''''''''''''''''''''''''''
+const updateMarksByFirstName = async (firstName, updatedMarks) => {
+  try {
+    // Find the student with the provided first name
+    const student = await studentsDetails.findOne({
+      where: { first_name: firstName },
+    });
+
+    if (!student) {
+      console.log(`Student with first name '${firstName}' not found.`);
+      return;
+    }
+
+    // Update the marks record associated with the student
+    await Marks.update(updatedMarks, {
+      where: { student_id: student.id },
+    });
+
+    console.log(`Marks record updated for student with first name '${firstName}'.`);
+  } catch (err) {
+    console.log("Error occurred:", err);
+  }
+};....................................
+const express = require('express');
+const router = express.Router();
+const { updateMarksByFirstName } = require('./path-to-file-with-updateMarksByFirstName');
+
+// Define the route for updating marks
+router.post('/update-marks', async (req, res) => {
+  const { firstName, updatedMarks } = req.body;
+
+  try {
+    await updateMarksByFirstName(firstName, updatedMarks);
+    res.status(200).json({ message: 'Marks updated successfully' });
+  } catch (error) {
+    console.log('Error:', error);
+    res.status(500).json({ error: 'An error occurred while updating marks' });
+  }
+});
+
+module.exports = router;
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+const getGood = async () => {
+  try {
+    const marks = await Marks.findAll({
+      attributes: [
+        'student_id',
+        [
+          sequelize.literal('SUM(tamil) + SUM(english) + SUM(maths)'),
+          'total_mark',
+        ],
+      ],
+      group: 'student_id',
+      having: sequelize.literal('total_mark >= 250'),
+    });
+
+    console.log(marks);
+  } catch (err) {
+    console.log("Error:", err);
+  }
+};
+
+// Call the getGood function
+getGood();
+...........................................................
+const getStudentsById = async (id) => {
+  try {
+    const result = await studentsDetails.findOne({
+      where: { id },
+      include: [Marks],
+    });
+
+    return JSON.parse(JSON.stringify(result));
+  } catch (err) {
+    console.log("Error:", err);
+  }
+};
+'''''''''''''''''''''''''''''''
+app.get("/getOneStudent", async (req, res) => {
+  const { id } = req.body;
+  let result = {
+    code: 200,
+    message: "",
+    data: null,
+  };
+  try {
+    let detail = await details.getStudentsById(id);
+    if (detail) {
+      result = {
+        data: detail,
+        message: "Student details fetched successfully",
+        code: 200,
+      };
+    } else {
+      result = {
+        code: 500,
+        message: "Error occurred while fetching student details",
+        data: null,
+      };
+    }
+    res.send(result);
+  } catch (err) {
+    console.log("Error occurred in fetching student details API: ", err);
+    result = {
+      code: 500,
+      message: "Error occurred while fetching student details",
+      data: null,
+    };
+    res.send(result);
+  }
+});
+
