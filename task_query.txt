@@ -9,7 +9,7 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 MariaDB [(none)]> show databases
     -> ;
 +--------------------+
-| Database           |
+| Database           
 +--------------------+
 | information_schema |
 | mysql              |
@@ -613,3 +613,899 @@ MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student
 4 rows in set (0.001 sec)
 
 MariaDB [student_details]>
+
+
+Enter password: ********
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 1790
+Server version: 11.2.0-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> \u student_details
+Database changed
+MariaDB [student_details]> show tables;
++---------------------------+
+| Tables_in_student_details |
++---------------------------+
+| marks                     |
+| students                  |
++---------------------------+
+2 rows in set (0.002 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
++----+------------+-----------+
+5 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
++----+------------+-----------+
+5 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
++----+------------+-----------+
+5 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
+|    20 |      70 |    60 |          4 |
+|    20 |     100 |    60 |          5 |
+|    20 |     100 |    50 |          6 |
++-------+---------+-------+------------+
+4 rows in set (0.001 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
+|    20 |      70 |    60 |          4 |
+|    20 |     100 |    60 |          5 |
+|    20 |     100 |    50 |          6 |
++-------+---------+-------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
++----+------------+-----------+
+5 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
+| 19 | navin      | elango    |
++----+------------+-----------+
+6 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
+|    20 |      70 |    60 |          4 |
+|    20 |     100 |    60 |          5 |
+|    20 |     100 |    50 |          6 |
++-------+---------+-------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
+| 19 | navin      | elango    |
+| 20 | navin      | elango    |
++----+------------+-----------+
+7 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
+|    20 |      70 |    60 |          4 |
+|    20 |     100 |    60 |          5 |
+|    20 |     100 |    50 |          6 |
++-------+---------+-------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> UPDATE marks
+    -> SET tamil = <new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
+    -> WHERE student_id IN (
+    ->   SELECT id
+    ->   FROM students
+    ->   WHERE first_name = '<desired_first_name>'
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '<new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
+WHER...' at line 2
+MariaDB [student_details]> UPDATE marks
+    -> SET tamil = 80, english = 80, maths = 70,
+    -> WHERE student_id IN (
+    ->   SELECT id
+    ->   FROM students
+    ->   WHERE first_name = 'karan'
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'WHERE student_id IN (
+  SELECT id
+  FROM students
+  WHERE first_name = 'karan'
+)' at line 3
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
+| 19 | navin      | elango    |
+| 20 | navin      | elango    |
+| 21 | navin      | elango    |
+| 22 | navin      | elango    |
+| 23 | navin      | elango    |
+| 24 | navin      | elango    |
+| 25 | navin      | elango    |
+| 26 | navin      | elango    |
+| 27 | navin      | elango    |
+| 28 | navin      | elango    |
+| 29 | navin      | elango    |
+| 30 | kavin      | elango    |
++----+------------+-----------+
+17 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
+|    20 |      70 |    60 |          4 |
+|    20 |     100 |    60 |          5 |
+|    20 |     100 |    50 |          6 |
++-------+---------+-------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    20 |      90 |    20 |          3 |
+|    20 |      70 |    60 |          4 |
+|    20 |     100 |    60 |          5 |
+|    20 |     100 |    50 |          6 |
++-------+---------+-------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
+| 19 | navin      | elango    |
+| 20 | navin      | elango    |
+| 21 | navin      | elango    |
+| 22 | navin      | elango    |
+| 23 | navin      | elango    |
+| 24 | navin      | elango    |
+| 25 | navin      | elango    |
+| 26 | navin      | elango    |
+| 27 | navin      | elango    |
+| 28 | navin      | elango    |
+| 29 | navin      | elango    |
+| 30 | kavin      | elango    |
+| 31 | kavin      | elango    |
+| 32 | kavin      | elango    |
+| 33 | kavin      | elango    |
+| 34 | kavin      | elango    |
+| 35 | kavin      | elango    |
+| 36 | kavin      | elango    |
+| 37 | kavin      | elango    |
+| 38 | kavin      | elango    |
+| 39 | kavin      | elango    |
+| 40 | kavin      | elango    |
+| 41 | kavin      | elango    |
+| 42 | kavin      | elango    |
+| 43 | kavin      | elango    |
++----+------------+-----------+
+30 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  3 | karan      | murugan   |
+|  4 | praveen    | Ravi      |
+|  5 | mano       | alagan    |
+|  6 | naveen     | elango    |
+| 18 | naveen     | elango    |
+| 19 | navin      | elango    |
+| 20 | navin      | elango    |
+| 21 | navin      | elango    |
+| 22 | navin      | elango    |
+| 23 | navin      | elango    |
+| 24 | navin      | elango    |
+| 25 | navin      | elango    |
+| 26 | navin      | elango    |
+| 27 | navin      | elango    |
+| 28 | navin      | elango    |
+| 29 | navin      | elango    |
+| 30 | kavin      | elango    |
+| 31 | kavin      | elango    |
+| 32 | kavin      | elango    |
+| 33 | kavin      | elango    |
+| 34 | kavin      | elango    |
+| 35 | kavin      | elango    |
+| 36 | kavin      | elango    |
+| 37 | kavin      | elango    |
+| 38 | kavin      | elango    |
+| 39 | kavin      | elango    |
+| 40 | kavin      | elango    |
+| 41 | kavin      | elango    |
+| 42 | kavin      | elango    |
+| 43 | kavin      | elango    |
+| 44 | kavin      | elango    |
++----+------------+-----------+
+31 rows in set (0.000 sec)
+
+MariaDB [student_details]> delete from students where id>18;
+Query OK, 29 rows affected (0.004 sec)
+
+MariaDB [student_details]> select * from students;
+Empty set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+| 48 | naveen     | elango    |
++----+------------+-----------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+| 48 | naveen     | elango    |
+| 49 | naveen     | elango    |
+| 50 | naveen     | elango    |
+| 51 | naveen     | elango    |
+| 52 | naveen     | elango    |
++----+------------+-----------+
+5 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
+Empty set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+| 63 | naveen     | elango    |
+| 64 | naveen     | elango    |
+| 65 | naveen     | elango    |
+| 66 | naveen     | elango    |
+| 67 | naveen     | elango    |
+| 68 | naveen     | elango    |
+| 69 | naveen     | elango    |
+| 70 | naveen     | elango    |
+| 71 | naveen     | elango    |
+| 72 | naveen     | elango    |
++----+------------+-----------+
+10 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
+Empty set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+|  86 | kavin      | elango    |
+|  87 | kavin      | elango    |
+|  88 | kavin      | elango    |
+|  89 | kavin      | elango    |
+|  90 | kavin      | elango    |
+|  91 | kavin      | elango    |
+|  92 | kavin      | elango    |
+|  93 | kavin      | elango    |
+|  94 | kavin      | elango    |
+|  95 | kavin      | elango    |
+|  96 | kavin      | elango    |
+|  97 | kavin      | elango    |
+|  98 | kavin      | elango    |
+|  99 | kavin      | elango    |
+| 100 | kavin      | elango    |
+| 101 | kavin      | elango    |
+| 102 | kavin      | elango    |
+| 103 | kavin      | elango    |
++-----+------------+-----------+
+18 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
+Empty set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 104 | kavin      | elango    |
+| 105 | kavin      | elango    |
+| 106 | kavin      | elango    |
+| 107 | kavin      | elango    |
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 110 | kavin      | elango    |
+| 111 | kavin      | elango    |
+| 112 | kavin      | elango    |
+| 113 | kavin      | elango    |
+| 114 | kavin      | elango    |
+| 115 | kavin      | elango    |
++-----+------------+-----------+
+12 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 104 | kavin      | elango    |
+| 105 | kavin      | elango    |
+| 106 | kavin      | elango    |
+| 107 | kavin      | elango    |
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 110 | kavin      | elango    |
+| 111 | kavin      | elango    |
+| 112 | kavin      | elango    |
+| 114 | kavin      | elango    |
+| 115 | kavin      | elango    |
++-----+------------+-----------+
+11 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 104 | kavin      | elango    |
+| 105 | kavin      | elango    |
+| 106 | kavin      | elango    |
+| 107 | kavin      | elango    |
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 110 | kavin      | elango    |
+| 111 | kavin      | elango    |
+| 112 | kavin      | elango    |
+| 114 | kavin      | elango    |
+| 115 | kavin      | elango    |
++-----+------------+-----------+
+11 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 104 | kavin      | elango    |
+| 105 | kavin      | elango    |
+| 106 | kavin      | elango    |
+| 107 | kavin      | elango    |
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 110 | kavin      | elango    |
+| 111 | kavin      | elango    |
+| 112 | kavin      | elango    |
+| 114 | kavin      | elango    |
++-----+------------+-----------+
+10 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 104 | kavin      | elango    |
+| 105 | kavin      | elango    |
+| 106 | kavin      | elango    |
+| 107 | kavin      | elango    |
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 110 | kavin      | elango    |
+| 111 | kavin      | elango    |
+| 114 | kavin      | elango    |
++-----+------------+-----------+
+9 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 104 | kavin      | elango    |
+| 105 | kavin      | elango    |
+| 106 | kavin      | elango    |
+| 107 | kavin      | elango    |
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 110 | kavin      | elango    |
+| 114 | kavin      | elango    |
++-----+------------+-----------+
+8 rows in set (0.000 sec)
+
+MariaDB [student_details]> desc marks;
++------------+---------+------+-----+---------+-------+
+| Field      | Type    | Null | Key | Default | Extra |
++------------+---------+------+-----+---------+-------+
+| tamil      | int(11) | NO   |     | NULL    |       |
+| english    | int(11) | NO   |     | NULL    |       |
+| maths      | int(11) | NO   |     | NULL    |       |
+| student_id | int(11) | YES  | MUL | NULL    |       |
++------------+---------+------+-----+---------+-------+
+4 rows in set (0.016 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (110,40,80,100),
+    -> (104,80,55,66),
+    -> (107,90,22,33);
+Query OK, 3 rows affected (0.003 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    40 |      80 |   100 |        110 |
+|    80 |      55 |    66 |        104 |
+|    90 |      22 |    33 |        107 |
++-------+---------+-------+------------+
+3 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 105 | kavin      | elango    |
+| 106 | kavin      | elango    |
+| 107 | kavin      | elango    |
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 110 | kavin      | elango    |
+| 114 | kavin      | elango    |
++-----+------------+-----------+
+7 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    40 |      80 |   100 |        110 |
+|    90 |      22 |    33 |        107 |
++-------+---------+-------+------------+
+2 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
+Empty set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 105 | kavin      | elango    |
+| 106 | kavin      | elango    |
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 114 | kavin      | elango    |
++-----+------------+-----------+
+5 rows in set (0.001 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (105,40,80,100),
+    -> (106,80,55,66),
+    -> (108,90,80,100);
+Query OK, 3 rows affected (0.002 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    40 |      80 |   100 |        105 |
+|    90 |      80 |   100 |        108 |
++-------+---------+-------+------------+
+2 rows in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    90 |      80 |   100 |        108 |
++-------+---------+-------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> (104,80,55,66);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '104,80,55,66)' at line 2
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 108 | kavin      | elango    |
+| 109 | kavin      | elango    |
+| 114 | kavin      | elango    |
++-----+------------+-----------+
+3 rows in set (0.000 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> (109,80,55,66);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '109,80,55,66)' at line 2
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (109,80,55,66);
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    90 |      80 |   100 |        108 |
++-------+---------+-------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 108 | kavin      | elango    |
+| 114 | kavin      | elango    |
++-----+------------+-----------+
+2 rows in set (0.000 sec)
+
+MariaDB [student_details]> select from students where id == 108;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from students where id == 108' at line 1
+MariaDB [student_details]> select from students where id = 108;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from students where id = 108' at line 1
+MariaDB [student_details]> select first_name from students where id = 108;
++------------+
+| first_name |
++------------+
+| kavin      |
++------------+
+1 row in set (0.002 sec)
+
+MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
++------------+-------------+
+| student_id | student_sum |
++------------+-------------+
+|        108 |         270 |
++------------+-------------+
+1 row in set (0.001 sec)
+
+MariaDB [student_details]> select * from marks;
++-------+---------+-------+------------+
+| tamil | english | maths | student_id |
++-------+---------+-------+------------+
+|    90 |      80 |   100 |        108 |
++-------+---------+-------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 3
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 108 | kavin      | elango    |
+| 114 | kavin      | elango    |
+| 116 | david      | chris     |
+| 117 | david      | chris     |
+| 118 | david      | chris     |
+| 119 | david      | chris     |
+| 120 | david      | chris     |
+| 121 | david      | chris     |
+| 122 | david      | chris     |
+| 123 | david      | chris     |
+| 124 | david      | chris     |
+| 125 | david      | chris     |
+| 126 | david      | chris     |
+| 127 | david      | chris     |
+| 128 | david      | chris     |
+| 129 | david      | chris     |
+| 130 | david      | chris     |
++-----+------------+-----------+
+17 rows in set (0.000 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (114,70,89,99),
+    -> (115,70,89,09),
+    -> (116,70,89,40),
+    -> (117,70,59,40),
+    -> (118,60,59,40),
+    -> (119,60,59,40);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`student_details`.`marks`, CONSTRAINT `marks_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE)
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (114,70,89,99),
+    -> (115,70,89,9),
+    -> (116,70,89,40),
+    -> (117,70,59,40),
+    -> (118,60,59,40),
+    -> (119,60,59,40);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`student_details`.`marks`, CONSTRAINT `marks_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE)
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    ->
+    -> (114,70,89,99),
+    -> (116,70,89,40),
+    -> (117,70,59,40),
+    -> (118,60,59,40),
+    -> (119,60,59,40);
+Query OK, 5 rows affected (0.002 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
++------------+-------------+
+| student_id | student_sum |
++------------+-------------+
+|        108 |         270 |
+|        114 |         258 |
+|        116 |         199 |
+|        117 |         169 |
+|        118 |         159 |
+|        119 |         159 |
++------------+-------------+
+6 rows in set (0.001 sec)
+
+MariaDB [student_details]> select students.first_name,marks.student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
+ERROR 1054 (42S22): Unknown column 'students.first_name' in 'field list'
+MariaDB [student_details]> select marks.student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
++------------+-------------+
+| student_id | student_sum |
++------------+-------------+
+|        108 |         270 |
+|        114 |         258 |
+|        116 |         199 |
+|        117 |         169 |
+|        118 |         159 |
+|        119 |         159 |
++------------+-------------+
+6 rows in set (0.000 sec)
+
+MariaDB [student_details]> select students.first_name from students,marks.student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER...' at line 1
+MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS TOTAL GROUP BY(student_id) ORDER BY(TOTAL) where TOTAL>250;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'where TOTAL>250' at line 1
+MariaDB [student_details]> SELECT student_id,SUM(tamil+english+maths) AS TOTAL_MARKS,RANK() OVER (ORDER BY(tamil+english+maths)DESC) as STATUS FROM marks GROUP BY student_id ORDER BY RANK;
+ERROR 1054 (42S22): Unknown column 'RANK' in 'order clause'
+MariaDB [student_details]> SELECT student_id,SUM(tamil+english+maths) AS TOTAL_MARKS,RANK() OVER (ORDER BY(tamil+english+maths)DESC) as STATUS FROM marks GROUP BY student_id ORDER BY STATUS;
++------------+-------------+--------+
+| student_id | TOTAL_MARKS | STATUS |
++------------+-------------+--------+
+|        108 |         270 |      1 |
+|        114 |         258 |      2 |
+|        116 |         199 |      3 |
+|        117 |         169 |      4 |
+|        118 |         159 |      5 |
+|        119 |         159 |      5 |
++------------+-------------+--------+
+6 rows in set (0.002 sec)
+
+MariaDB [student_details]> UPDATE marks
+    -> SET tamil = <new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
+    -> WHERE student_id IN (
+    ->   SELECT id
+    ->   FROM students
+    ->   WHERE first_name = '<desired_first_name>'
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '<new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
+WHER...' at line 2
+MariaDB [student_details]> desc students;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
+| first_name | varchar(20) | NO   |     | NULL    |                |
+| last_name  | varchar(20) | NO   |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+3 rows in set (0.010 sec)
+
+MariaDB [student_details]> desc marks;
++------------+---------+------+-----+---------+-------+
+| Field      | Type    | Null | Key | Default | Extra |
++------------+---------+------+-----+---------+-------+
+| tamil      | int(11) | NO   |     | NULL    |       |
+| english    | int(11) | NO   |     | NULL    |       |
+| maths      | int(11) | NO   |     | NULL    |       |
+| student_id | int(11) | YES  | MUL | NULL    |       |
++------------+---------+------+-----+---------+-------+
+4 rows in set (0.009 sec)
+
+MariaDB [student_details]> drop table marks;
+Query OK, 0 rows affected (0.040 sec)
+
+MariaDB [student_details]> create table marks(
+    ->     -> student_id INT,
+    ->     -> FOREIGN KEY(student_id) REFERENCES students(id),
+    ->     -> tamil INT NOT NULL,
+    ->     -> english INT NOT NULL,
+    ->     -> maths INT NOT NULL);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '-> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+  ...' at line 2
+MariaDB [student_details]> create table marks(
+    -> id INT PRIMARY KEY AUTO INCREMENT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    ->     -> tamil INT NOT NULL,
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
+FOREIGN KEY(student_id) REFERENCES students(id),
+    -> tamil...' at line 2
+MariaDB [student_details]> create table marks(
+    -> id INT PRIMARY KEY AUTO INCREMENT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> FOREIGN KEY(student_id) REFERENCES students(id),;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
+FOREIGN KEY(student_id) REFERENCES students(id),
+FOREIGN KEY(...' at line 2
+MariaDB [student_details]> create table marks(
+    -> id INT PRIMARY KEY AUTO INCREMENT,
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
+student_id INT,
+FOREIGN KEY(student_id) REFERENCES students(id),' at line 2
+MariaDB [student_details]> create table marks(
+    -> id INT PRIMARY KEY AUTO INCREMENT,
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
+student_id INT,
+FOREIGN KEY(student_id) REFERENCES students(i...' at line 2
+MariaDB [student_details]> create table marks(
+    -> id INT PRIMARY KEY AUTOINCREMENT,
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+student_id INT,
+FOREIGN KEY(student_id) REFERENCES students(id),
+tamil INT N...' at line 2
+MariaDB [student_details]> create table marks(
+    -> ID INT PRIMARY KEY AUTO INCREMENT,
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
+student_id INT,
+FOREIGN KEY(student_id) REFERENCES students(i...' at line 2
+MariaDB [student_details]> create table marks(
+    -> ID INT PRIMARY KEY AUTOINCREMENT,
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+student_id INT,
+FOREIGN KEY(student_id) REFERENCES students(id),
+tamil INT N...' at line 2
+MariaDB [student_details]> create table marks(
+    -> ID INT PRIMARY KEY AUTO_INCREMENT,
+    -> student_id INT,
+    -> FOREIGN KEY(student_id) REFERENCES students(id),
+    -> tamil INT NOT NULL,
+    -> english INT NOT NULL,
+    -> maths INT NOT NULL);
+Query OK, 0 rows affected (0.035 sec)
+
+MariaDB [student_details]> desc marks;
++------------+---------+------+-----+---------+----------------+
+| Field      | Type    | Null | Key | Default | Extra          |
++------------+---------+------+-----+---------+----------------+
+| ID         | int(11) | NO   | PRI | NULL    | auto_increment |
+| student_id | int(11) | YES  | MUL | NULL    |                |
+| tamil      | int(11) | NO   |     | NULL    |                |
+| english    | int(11) | NO   |     | NULL    |                |
+| maths      | int(11) | NO   |     | NULL    |                |
++------------+---------+------+-----+---------+----------------+
+5 rows in set (0.016 sec)
+
+MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
+    -> values
+    -> (116,70,56,45);
+Query OK, 1 row affected (0.003 sec)
+
+MariaDB [student_details]> select * from students;
++-----+------------+-----------+
+| id  | first_name | last_name |
++-----+------------+-----------+
+| 108 | kavin      | elango    |
+| 114 | kavin      | elango    |
+| 116 | david      | chris     |
+| 117 | david      | chris     |
+| 118 | david      | chris     |
+| 119 | david      | chris     |
+| 120 | david      | chris     |
+| 121 | david      | chris     |
+| 122 | david      | chris     |
+| 123 | david      | chris     |
+| 124 | david      | chris     |
+| 125 | david      | chris     |
+| 126 | david      | chris     |
+| 127 | david      | chris     |
+| 128 | david      | chris     |
+| 129 | david      | chris     |
+| 130 | david      | chris     |
++-----+------------+-----------+
+17 rows in set (0.001 sec)
+
+MariaDB [student_details]> select * from marks;
++----+------------+-------+---------+-------+
+| ID | student_id | tamil | english | maths |
++----+------------+-------+---------+-------+
+|  1 |        116 |    70 |      56 |    45 |
++----+------------+-------+---------+-------+
+1 row in set (0.000 sec)
+
+MariaDB [student_details]> select * from marks;
++----+------------+-------+---------+-------+
+| ID | student_id | tamil | english | maths |
++----+------------+-------+---------+-------+
+|  1 |        116 |    70 |      56 |    45 |
++----+------------+-------+---------+-------+
+1 row in set (0.001 sec)
