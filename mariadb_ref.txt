@@ -355,4 +355,166 @@ SELECT student_id,student_name, sum(marks) AS avg_score,DENSE_RANK() OVER (ORDER
 |          2 | Gokul        |       370 |    2 |
 |          1 | navin        |       328 |    3 |
 +------------+--------------+-----------+------+
+const express = require('express')
+const exp = express()
+const request = require('supertest');
+const app = require('./index');
+// jest.setTimeout(4000);
+describe('Student Details Database', () => {
+    test("Should get the students details from the database", async () => {
+        await request(app).get('/getStudents').send({}).expect({"data": [
+            {
+                "id": 1,
+                "first_name": "naveen",
+                "last_name": "elango",
+                "email_id": "naveen@gmail.com",
+                "Mark": {
+                    "ID": 1,
+                    "student_id": 1,
+                    "tamil": 90,
+                    "english": 100,
+                    "maths": 80
+                }
+            },
+            {
+                "id": 3,
+                "first_name": "naveen",
+                "last_name": "elango",
+                "email_id": "sample@gmail.com",
+                "Mark": {
+                    "ID": 3,
+                    "student_id": 3,
+                    "tamil": 95,
+                    "english": 88,
+                    "maths": 92
+                }
+            },
+            {
+                "id": 4,
+                "first_name": "naveen",
+                "last_name": "elango",
+                "email_id": "elango@gmail.com",
+                "Mark": {
+                    "ID": 4,
+                    "student_id": 4,
+                    "tamil": 40,
+                    "english": 100,
+                    "maths": 100
+                }
+            },
+            {
+                "id": 12,
+                "first_name": "naveen",
+                "last_name": "elango",
+                "email_id": "samle@gmail.com",
+                "Mark": {
+                    "ID": 5,
+                    "student_id": 12,
+                    "tamil": 100,
+                    "english": 100,
+                    "maths": 90
+                }
+            },
+            {
+                "id": 14,
+                "first_name": "naveen",
+                "last_name": "elango",
+                "email_id": "elan@gmail.com",
+                "Mark": {
+                    "ID": 6,
+                    "student_id": 14,
+                    "tamil": 40,
+                    "english": 100,
+                    "maths": 100
+                }
+            }
+        ],
+        "message": "Students name fetched successfully",
+        "code": 200})
+    })
+//     test('should navigate to /create with input data', (done) => { 
+//         // jest.setTimeout(4 * 1000);
+//         request(app).post('/create').send({ 
+//         "fname":"naveen",
+//         "lname":"elango",
+//         "email":"elango@gmail.com",
+//     "marks":{
+//         "tamil":40,
+//         "english":100,
+//         "maths":100
+     
+//     },
+// }).expect(201)
+// .end((err, res) => {
+//     if (err) return done(err);
+//     done();
+//   });
+// })
+test("Check if using the proper URL", async () => {
+        await request(app).get('/creat').send({
+        }).expect(404)
+    })
+       
+     test('should navigate to /getOneStudent with input data', async () => {
+        await request(app).get('/getOneStudent').query({ id: 1 }).expect({
+            "data": {
+                "id": 1,
+                "first_name": "naveen",
+                "last_name": "elango",
+                "email_id": "naveen@gmail.com",
+                "Mark": {
+                    "ID": 1,
+                    "student_id": 1,
+                    "tamil": 90,
+                    "english": 100,
+                    "maths": 80
+                }
+            },
+            "message": "Student name fetched successfully",
+            "code": 200
+        })
+    })
+
+})
+....................................................
+test('should return message when there are no students', async () => {
+  // Mock the details.getStudents() method to return an empty array
+  details.getStudents = jest.fn().mockResolvedValue([]);
+
+  // Make a request to the /showStudents endpoint
+  const response = await request(app).get('/showStudents');
+
+  // Verify the response
+  expect(response.status).toBe(200);
+  expect(response.body).toEqual({
+    message: "There is no data to fetch from the database",
+    data: null,
+  });
+});
+....................................................................
+const createDetails = async (fname, lname, email, marks) => {
+  try {
+    const student = await studentsDetails.create({
+      first_name: fname,
+      last_name: lname,
+      email_id: email
+    });
+
+    const newMarksData = await Marks.create({
+      tamil: marks.tamil,
+      english: marks.english,
+      maths: marks.maths,
+      student_id: student.id
+    });
+    return JSON.parse(JSON.stringify(newMarksData));
+  } catch (err) {
+    if (err.name === 'SequelizeUniqueConstraintError') {
+      // Handle the case when the email ID is repeated
+      throw new Error('Email ID is already in use. Please provide a unique email ID.');
+    } else {
+      // Handle other errors
+      throw new Error('Error Occurred on createDetails()');
+    }
+  }
+};
 
