@@ -1,1586 +1,344 @@
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MariaDB connection id is 1614
-Server version: 11.2.0-MariaDB mariadb.org binary distribution
-
-Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
-
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
-MariaDB [(none)]> show databases
-    -> ;
-+--------------------+
-| Database           
-+--------------------+
-| information_schema |
-| mysql              |
-| newdata            |
-| performance_schema |
-| quizapp            |
-| sys                |
-+--------------------+
-6 rows in set (0.013 sec)
-
-MariaDB [(none)]> create database student_details;
-Query OK, 1 row affected (0.005 sec)
-
-MariaDB [(none)]> \u student_details;
-ERROR 1049 (42000): Unknown database 'student_details;'
-MariaDB [(none)]> \u student_details
-Database changed
-MariaDB [student_details]> create table students(id INT PRIMARY KEY AUTOINCREMENT, first_name varchar(20) NOT NULL, last_name varchar(20) NOT NULL);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ' first_name varchar(20) NOT NULL, last_name varchar(20) NOT NULL)' at line 1
-MariaDB [student_details]> create table students(id INT PRIMARY KEY AUTO_INCREMENT, first_name varchar(20) NOT NULL, last_name varchar(20) NOT NULL);
-Query OK, 0 rows affected (0.039 sec)
-
-MariaDB [student_details]> DESC students;
-+------------+-------------+------+-----+---------+----------------+
-| Field      | Type        | Null | Key | Default | Extra          |
-+------------+-------------+------+-----+---------+----------------+
-| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
-| first_name | varchar(20) | NO   |     | NULL    |                |
-| last_name  | varchar(20) | NO   |     | NULL    |                |
-+------------+-------------+------+-----+---------+----------------+
-3 rows in set (0.032 sec)
-
-MariaDB [student_details]> create table marks(
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL);
-Query OK, 0 rows affected (0.027 sec)
-
-MariaDB [student_details]> desc marks;
-+------------+---------+------+-----+---------+-------+
-| Field      | Type    | Null | Key | Default | Extra |
-+------------+---------+------+-----+---------+-------+
-| student_id | int(11) | YES  | MUL | NULL    |       |
-| tamil      | int(11) | NO   |     | NULL    |       |
-| english    | int(11) | NO   |     | NULL    |       |
-| maths      | int(11) | NO   |     | NULL    |       |
-+------------+---------+------+-----+---------+-------+
-4 rows in set (0.015 sec)
-
-MariaDB [student_details]> insert into students(first_name,last_name)
-    -> values
-    -> ('ganesh','ravi'),
-    -> ('saran','ramani'),
-    -> ('karan','murugan'),
-    -> ('praveen','kandhasamy'),
-    -> ('mano','alagan');
-Query OK, 5 rows affected (0.005 sec)
-Records: 5  Duplicates: 0  Warnings: 0
-
-MariaDB [student_details]> select * from students
-    -> ;
-+----+------------+------------+
-| id | first_name | last_name  |
-+----+------------+------------+
-|  1 | ganesh     | ravi       |
-|  2 | saran      | ramani     |
-|  3 | karan      | murugan    |
-|  4 | praveen    | kandhasamy |
-|  5 | mano       | alagan     |
-+----+------------+------------+
-5 rows in set (0.000 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (1,60,70,80),
-    -> (2,35,35,35),
-    -> (3,90,20,10),
-    -> (4,50,50,50),
-    -> (5,70,40,73);
-Query OK, 5 rows affected (0.003 sec)
-Records: 5  Duplicates: 0  Warnings: 0
-
-MariaDB [student_details]> select * from marks;
-+------------+-------+---------+-------+
-| student_id | tamil | english | maths |
-+------------+-------+---------+-------+
-|          1 |    60 |      70 |    80 |
-|          2 |    35 |      35 |    35 |
-|          3 |    90 |      20 |    10 |
-|          4 |    50 |      50 |    50 |
-|          5 |    70 |      40 |    73 |
-+------------+-------+---------+-------+
-5 rows in set (0.000 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> (7,35,35,35),
-    -> ;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '7,35,35,35),' at line 2
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> (7,35,35,35);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '7,35,35,35)' at line 2
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (7,35,35,35);
-ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`student_details`.`marks`, CONSTRAINT `marks_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`))
-MariaDB [student_details]> delete from students where id=2;
-ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`student_details`.`marks`, CONSTRAINT `marks_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`))
-MariaDB [student_details]> delete from marks where id=2;
-ERROR 1054 (42S22): Unknown column 'id' in 'where clause'
-MariaDB [student_details]> delete from marks where student_id=2;
-Query OK, 1 row affected (0.003 sec)
-
-MariaDB [student_details]> select * from marks;
-+------------+-------+---------+-------+
-| student_id | tamil | english | maths |
-+------------+-------+---------+-------+
-|          1 |    60 |      70 |    80 |
-|          3 |    90 |      20 |    10 |
-|          4 |    50 |      50 |    50 |
-|          5 |    70 |      40 |    73 |
-+------------+-------+---------+-------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+------------+
-| id | first_name | last_name  |
-+----+------------+------------+
-|  1 | ganesh     | ravi       |
-|  2 | saran      | ramani     |
-|  3 | karan      | murugan    |
-|  4 | praveen    | kandhasamy |
-|  5 | mano       | alagan     |
-+----+------------+------------+
-5 rows in set (0.000 sec)
-
-MariaDB [student_details]> delete from students where id=2;
-Query OK, 1 row affected (0.003 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+------------+
-| id | first_name | last_name  |
-+----+------------+------------+
-|  1 | ganesh     | ravi       |
-|  3 | karan      | murugan    |
-|  4 | praveen    | kandhasamy |
-|  5 | mano       | alagan     |
-+----+------------+------------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> DELETE invoice, invoice_infos
-    -> FROM invoice
-    -> INNER JOIN invoice_infos ON invoice.invoice_id = invoice_infos.invoice_id
-    -> WHERE invoice.invoice_id = ?;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 4
-MariaDB [student_details]> DELETE students.id,marks.students_id
-    -> from students
-    -> INNER JOIN students on students.id=marks.students_id
-    -> WHERE students.id = 1;
-ERROR 1066 (42000): Not unique table/alias: 'students'
-MariaDB [student_details]> DELETE students.id,marks.students_id
-    -> from students
-    -> INNER JOIN students on marks.students_id=students.id
-    -> WHERE students.id = 1;
-ERROR 1066 (42000): Not unique table/alias: 'students'
-MariaDB [student_details]> select students.id,marks.students_id
-    -> from students
-    -> INNER JOIN students on marks.students_id=students.id;
-ERROR 1066 (42000): Not unique table/alias: 'students'
-MariaDB [student_details]> show tables;
-+---------------------------+
-| Tables_in_student_details |
-+---------------------------+
-| marks                     |
-| students                  |
-+---------------------------+
-2 rows in set (0.002 sec)
-
-MariaDB [student_details]> select * from users;
-ERROR 1146 (42S02): Table 'student_details.users' doesn't exist
-MariaDB [student_details]> select * from students;
-+----+------------+------------+
-| id | first_name | last_name  |
-+----+------------+------------+
-|  1 | ganesh     | ravi       |
-|  3 | karan      | murugan    |
-|  4 | praveen    | kandhasamy |
-|  5 | mano       | alagan     |
-+----+------------+------------+
-4 rows in set (0.001 sec)
-
-MariaDB [student_details]> select * from marks;
-+------------+-------+---------+-------+
-| student_id | tamil | english | maths |
-+------------+-------+---------+-------+
-|          1 |    60 |      70 |    80 |
-|          3 |    90 |      20 |    10 |
-|          4 |    50 |      50 |    50 |
-|          5 |    70 |      40 |    73 |
-+------------+-------+---------+-------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> ALTER table marks DROP COLUMN student_id;
-ERROR 1553 (HY000): Cannot drop index 'student_id': needed in a foreign key constraint
-MariaDB [student_details]> drop table marks;
-Query OK, 0 rows affected (0.033 sec)
-
-MariaDB [student_details]> select * from marks;
-ERROR 1146 (42S02): Table 'student_details.marks' doesn't exist
-MariaDB [student_details]> create table marks(
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> ON DELETE CASCADE,
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'ON DELETE CASCADE,
-tamil INT NOT NULL,
-english INT NOT NULL,
-maths INT NOT NULL)' at line 4
-MariaDB [student_details]> create table marks(
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL);
-Query OK, 0 rows affected (0.023 sec)
-
-MariaDB [student_details]> drop table marks;
-Query OK, 0 rows affected (0.024 sec)
-
-MariaDB [student_details]> create table marks(
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL,
-    -> student_id INT
-    -> FOREIGN KEY(student_id) REFERENCES students(id)
-    -> ON DELETE CASCADE
-    -> );
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FOREIGN KEY(student_id) REFERENCES students(id)
-ON DELETE CASCADE
-)' at line 6
-MariaDB [student_details]> create table marks(
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL,
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> ON DELETE CASCADE);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'ON DELETE CASCADE)' at line 7
-MariaDB [student_details]> create table marks(
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL,
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id) ON DELETE CASCADE
-    -> );
-Query OK, 0 rows affected (0.023 sec)
-
-MariaDB [student_details]> INSERT INTO marks(
-    -> values
-    -> (1,30,40,50),
-    -> (3,80,90,20);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 4
-MariaDB [student_details]> INSERT INTO marks(student_id,tamil,english,maths)
-    -> values
-    -> (1,30,40,50),
-    -> (3,80,90,20);
-Query OK, 2 rows affected (0.007 sec)
-Records: 2  Duplicates: 0  Warnings: 0
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    30 |      40 |    50 |          1 |
-|    80 |      90 |    20 |          3 |
-+-------+---------+-------+------------+
-2 rows in set (0.000 sec)
-
-MariaDB [student_details]> delete from students where id = 1;
-Query OK, 1 row affected (0.002 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+------------+
-| id | first_name | last_name  |
-+----+------------+------------+
-|  3 | karan      | murugan    |
-|  4 | praveen    | kandhasamy |
-|  5 | mano       | alagan     |
-+----+------------+------------+
-3 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    80 |      90 |    20 |          3 |
-+-------+---------+-------+------------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> update marks
-    -> set english = 20
-    -> where first_name = karan;
-ERROR 1054 (42S22): Unknown column 'first_name' in 'where clause'
-MariaDB [student_details]> update students
-    -> set last_name = 'Ravi'
-    -> where first_name = 'praveen';
-Query OK, 1 row affected (0.004 sec)
-Rows matched: 1  Changed: 1  Warnings: 0
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-+----+------------+-----------+
-3 rows in set (0.000 sec)
-
-MariaDB [student_details]> UPDATE marks
-    -> SET tamil = 20
-    -> FROM marks
-    -> WHERE marks.student_id=(SELECT id from students WHERE first_name = 'karan')
-    -> ;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM marks
-WHERE marks.student_id=(SELECT id from students WHERE first_name =...' at line 3
-MariaDB [student_details]> UPDATE marks
-    -> SET tamil = 20
-    -> FROM marks WHERE marks.student_id=(SELECT id from students WHERE first_name = 'karan');
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM marks WHERE marks.student_id=(SELECT id from students WHERE first_name =...' at line 3
-MariaDB [student_details]> UPDATE marks
-    -> SET tamil = 20
-    -> FROM marks WHERE marks.3=(SELECT id from students WHERE first_name = 'karan');
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM marks WHERE marks.3=(SELECT id from students WHERE first_name = 'karan')' at line 3
-MariaDB [student_details]> UPDATE marks
-    -> SET tamil = 20
-    -> from marks
-    -> WHERE marks.student_id=3;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from marks
-WHERE marks.student_id=3' at line 3
-MariaDB [student_details]> UPDATE marks
-    -> SET tamil = 20
-    -> WHERE marks.student_id=3;
-Query OK, 1 row affected (0.003 sec)
-Rows matched: 1  Changed: 1  Warnings: 0
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-+-------+---------+-------+------------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> UPDATE marks
-    -> SET english = 75
-    -> JOIN students ON marks.students_id=students.id
-    -> WHERE students.first_name = 'karan';
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'JOIN students ON marks.students_id=students.id
-WHERE students.first_name = 'k...' at line 3
-MariaDB [student_details]> UPDATE marks
-    -> SET english = 75
-    -> FROM marks
-    -> JOIN students ON marks.students_id=students.id
-    -> WHERE students.first_name = 'karan';
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM marks
-JOIN students ON marks.students_id=students.id
-WHERE students.firs...' at line 3
-MariaDB [student_details]> SELECT column_name(s)
-    -> FROM table1
-    -> INNER JOIN table2
-    -> ON table1.column_name = table2.column_name;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(s)
-FROM table1
-INNER JOIN table2
-ON table1.column_name = table2.column_name' at line 1
-MariaDB [student_details]> SELECT students
-    -> FROM students
-    -> INNER JOIN marks
-    -> ON students.id = marks.student_id;
-ERROR 1054 (42S22): Unknown column 'students' in 'field list'
-MariaDB [student_details]> SELECT students.id
-    -> FROM students
-    -> INNER JOIN marks
-    -> ON students.id = marks.student_id;
-+----+
-| id |
-+----+
-|  3 |
-+----+
-1 row in set (0.008 sec)
-
-MariaDB [student_details]> SELECT students.id,marks.student_id
-    -> FROM students
-    -> INNER JOIN marks
-    -> ON students.id = marks.student_id;
-+----+------------+
-| id | student_id |
-+----+------------+
-|  3 |          3 |
-+----+------------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> UPDATE marks
-    -> from marks
-    -> INNER JOIN marks
-    -> ON students.id = marks.student_id
-    -> SET tamil = 10
-    -> WHERE students.id.first_name = 'karan';
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from marks
-INNER JOIN marks
-ON students.id = marks.student_id
-SET tamil = 10
-...' at line 2
-MariaDB [student_details]> SELECT students.id,marks.student_id
-    ->
-    -> ;
-ERROR 1109 (42S02): Unknown table 'students' in field list
-MariaDB [student_details]> SELECT students.first_name,marks.student_id
-    -> FROM students
-    -> INNER JOIN marks
-    -> ON students.first_name = marks.student_id;
-Empty set, 3 warnings (0.004 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-+----+------------+-----------+
-3 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-+-------+---------+-------+------------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> desc marks;
-+------------+---------+------+-----+---------+-------+
-| Field      | Type    | Null | Key | Default | Extra |
-+------------+---------+------+-----+---------+-------+
-| tamil      | int(11) | NO   |     | NULL    |       |
-| english    | int(11) | NO   |     | NULL    |       |
-| maths      | int(11) | NO   |     | NULL    |       |
-| student_id | int(11) | YES  | MUL | NULL    |       |
-+------------+---------+------+-----+---------+-------+
-4 rows in set (0.014 sec)
-
-MariaDB [student_details]> desc students;
-+------------+-------------+------+-----+---------+----------------+
-| Field      | Type        | Null | Key | Default | Extra          |
-+------------+-------------+------+-----+---------+----------------+
-| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
-| first_name | varchar(20) | NO   |     | NULL    |                |
-| last_name  | varchar(20) | NO   |     | NULL    |                |
-+------------+-------------+------+-----+---------+----------------+
-3 rows in set (0.012 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-+----+------------+-----------+
-3 rows in set (0.003 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-+----+------------+-----------+
-4 rows in set (0.001 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-|  7 | naveen     | elango    |
-|  8 | naveen     | elango    |
-|  9 | naveen     | elango    |
-| 10 | naveen     | elango    |
-| 11 | naveen     | elango    |
-| 12 | naveen     | elango    |
-+----+------------+-----------+
-10 rows in set (0.001 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-|  7 | naveen     | elango    |
-|  8 | naveen     | elango    |
-|  9 | naveen     | elango    |
-| 10 | naveen     | elango    |
-| 11 | naveen     | elango    |
-| 12 | naveen     | elango    |
-| 13 | naveen     | elango    |
-| 14 | naveen     | elango    |
-| 15 | naveen     | elango    |
-| 16 | naveen     | elango    |
-| 17 | naveen     | elango    |
-+----+------------+-----------+
-15 rows in set (0.000 sec)
-
-MariaDB [student_details]> delete from students where id>6;
-Query OK, 11 rows affected (0.012 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-+----+------------+-----------+
-4 rows in set (0.001 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-+-------+---------+-------+------------+
-1 row in set (0.001 sec)
-
-MariaDB [student_details]> SELECT student_id, SUM(tamil,english,maths) from marks GROUPBY(student_id);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'english,maths) from marks GROUPBY(student_id)' at line 1
-MariaDB [student_details]> SUM maths form marks;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM maths form marks' at line 1
-MariaDB [student_details]> SUM(maths) from Marks;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(maths) from Marks' at line 1
-MariaDB [student_details]> SELECT SUM(maths) from marks;
-+------------+
-| SUM(maths) |
-+------------+
-|         20 |
-+------------+
-1 row in set (0.005 sec)
-
-MariaDB [student_details]> select student_id,SUM(tamil+english+maths) from marks GROUPBY(student_id);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(student_id)' at line 1
-MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUPBY(student_id) ORDERBY(student_sum) DESC;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(student_id) ORDERBY(student_sum) DESC' at line 1
-MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
-+------------+-------------+
-| student_id | student_sum |
-+------------+-------------+
-|          3 |         130 |
-+------------+-------------+
-1 row in set (0.027 sec)
-
-MariaDB [student_details]> insert into marks(tamil,english,maths,student_id)
-    -> values
-    -> (20,70,60,4),
-    -> (20,100,60,5),
-    -> (20,100,50,6);
-Query OK, 3 rows affected (0.003 sec)
-Records: 3  Duplicates: 0  Warnings: 0
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-|    20 |      70 |    60 |          4 |
-|    20 |     100 |    60 |          5 |
-|    20 |     100 |    50 |          6 |
-+-------+---------+-------+------------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
-+------------+-------------+
-| student_id | student_sum |
-+------------+-------------+
-|          5 |         180 |
-|          6 |         170 |
-|          4 |         150 |
-|          3 |         130 |
-+------------+-------------+
-4 rows in set (0.001 sec)
-
-MariaDB [student_details]>
-
-
-Enter password: ********
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MariaDB connection id is 1790
-Server version: 11.2.0-MariaDB mariadb.org binary distribution
-
-Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
-
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
-MariaDB [(none)]> \u student_details
-Database changed
-MariaDB [student_details]> show tables;
-+---------------------------+
-| Tables_in_student_details |
-+---------------------------+
-| marks                     |
-| students                  |
-+---------------------------+
-2 rows in set (0.002 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-+----+------------+-----------+
-5 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-+----+------------+-----------+
-5 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-+----+------------+-----------+
-5 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-|    20 |      70 |    60 |          4 |
-|    20 |     100 |    60 |          5 |
-|    20 |     100 |    50 |          6 |
-+-------+---------+-------+------------+
-4 rows in set (0.001 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-|    20 |      70 |    60 |          4 |
-|    20 |     100 |    60 |          5 |
-|    20 |     100 |    50 |          6 |
-+-------+---------+-------+------------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-+----+------------+-----------+
-5 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-| 19 | navin      | elango    |
-+----+------------+-----------+
-6 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-|    20 |      70 |    60 |          4 |
-|    20 |     100 |    60 |          5 |
-|    20 |     100 |    50 |          6 |
-+-------+---------+-------+------------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-| 19 | navin      | elango    |
-| 20 | navin      | elango    |
-+----+------------+-----------+
-7 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-|    20 |      70 |    60 |          4 |
-|    20 |     100 |    60 |          5 |
-|    20 |     100 |    50 |          6 |
-+-------+---------+-------+------------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> UPDATE marks
-    -> SET tamil = <new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
-    -> WHERE student_id IN (
-    ->   SELECT id
-    ->   FROM students
-    ->   WHERE first_name = '<desired_first_name>'
-    -> );
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '<new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
-WHER...' at line 2
-MariaDB [student_details]> UPDATE marks
-    -> SET tamil = 80, english = 80, maths = 70,
-    -> WHERE student_id IN (
-    ->   SELECT id
-    ->   FROM students
-    ->   WHERE first_name = 'karan'
-    -> );
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'WHERE student_id IN (
-  SELECT id
-  FROM students
-  WHERE first_name = 'karan'
-)' at line 3
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-| 19 | navin      | elango    |
-| 20 | navin      | elango    |
-| 21 | navin      | elango    |
-| 22 | navin      | elango    |
-| 23 | navin      | elango    |
-| 24 | navin      | elango    |
-| 25 | navin      | elango    |
-| 26 | navin      | elango    |
-| 27 | navin      | elango    |
-| 28 | navin      | elango    |
-| 29 | navin      | elango    |
-| 30 | kavin      | elango    |
-+----+------------+-----------+
-17 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-|    20 |      70 |    60 |          4 |
-|    20 |     100 |    60 |          5 |
-|    20 |     100 |    50 |          6 |
-+-------+---------+-------+------------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    20 |      90 |    20 |          3 |
-|    20 |      70 |    60 |          4 |
-|    20 |     100 |    60 |          5 |
-|    20 |     100 |    50 |          6 |
-+-------+---------+-------+------------+
-4 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-| 19 | navin      | elango    |
-| 20 | navin      | elango    |
-| 21 | navin      | elango    |
-| 22 | navin      | elango    |
-| 23 | navin      | elango    |
-| 24 | navin      | elango    |
-| 25 | navin      | elango    |
-| 26 | navin      | elango    |
-| 27 | navin      | elango    |
-| 28 | navin      | elango    |
-| 29 | navin      | elango    |
-| 30 | kavin      | elango    |
-| 31 | kavin      | elango    |
-| 32 | kavin      | elango    |
-| 33 | kavin      | elango    |
-| 34 | kavin      | elango    |
-| 35 | kavin      | elango    |
-| 36 | kavin      | elango    |
-| 37 | kavin      | elango    |
-| 38 | kavin      | elango    |
-| 39 | kavin      | elango    |
-| 40 | kavin      | elango    |
-| 41 | kavin      | elango    |
-| 42 | kavin      | elango    |
-| 43 | kavin      | elango    |
-+----+------------+-----------+
-30 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-|  3 | karan      | murugan   |
-|  4 | praveen    | Ravi      |
-|  5 | mano       | alagan    |
-|  6 | naveen     | elango    |
-| 18 | naveen     | elango    |
-| 19 | navin      | elango    |
-| 20 | navin      | elango    |
-| 21 | navin      | elango    |
-| 22 | navin      | elango    |
-| 23 | navin      | elango    |
-| 24 | navin      | elango    |
-| 25 | navin      | elango    |
-| 26 | navin      | elango    |
-| 27 | navin      | elango    |
-| 28 | navin      | elango    |
-| 29 | navin      | elango    |
-| 30 | kavin      | elango    |
-| 31 | kavin      | elango    |
-| 32 | kavin      | elango    |
-| 33 | kavin      | elango    |
-| 34 | kavin      | elango    |
-| 35 | kavin      | elango    |
-| 36 | kavin      | elango    |
-| 37 | kavin      | elango    |
-| 38 | kavin      | elango    |
-| 39 | kavin      | elango    |
-| 40 | kavin      | elango    |
-| 41 | kavin      | elango    |
-| 42 | kavin      | elango    |
-| 43 | kavin      | elango    |
-| 44 | kavin      | elango    |
-+----+------------+-----------+
-31 rows in set (0.000 sec)
-
-MariaDB [student_details]> delete from students where id>18;
-Query OK, 29 rows affected (0.004 sec)
-
-MariaDB [student_details]> select * from students;
-Empty set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-| 48 | naveen     | elango    |
-+----+------------+-----------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-| 48 | naveen     | elango    |
-| 49 | naveen     | elango    |
-| 50 | naveen     | elango    |
-| 51 | naveen     | elango    |
-| 52 | naveen     | elango    |
-+----+------------+-----------+
-5 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-Empty set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+----+------------+-----------+
-| id | first_name | last_name |
-+----+------------+-----------+
-| 63 | naveen     | elango    |
-| 64 | naveen     | elango    |
-| 65 | naveen     | elango    |
-| 66 | naveen     | elango    |
-| 67 | naveen     | elango    |
-| 68 | naveen     | elango    |
-| 69 | naveen     | elango    |
-| 70 | naveen     | elango    |
-| 71 | naveen     | elango    |
-| 72 | naveen     | elango    |
-+----+------------+-----------+
-10 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-Empty set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-|  86 | kavin      | elango    |
-|  87 | kavin      | elango    |
-|  88 | kavin      | elango    |
-|  89 | kavin      | elango    |
-|  90 | kavin      | elango    |
-|  91 | kavin      | elango    |
-|  92 | kavin      | elango    |
-|  93 | kavin      | elango    |
-|  94 | kavin      | elango    |
-|  95 | kavin      | elango    |
-|  96 | kavin      | elango    |
-|  97 | kavin      | elango    |
-|  98 | kavin      | elango    |
-|  99 | kavin      | elango    |
-| 100 | kavin      | elango    |
-| 101 | kavin      | elango    |
-| 102 | kavin      | elango    |
-| 103 | kavin      | elango    |
-+-----+------------+-----------+
-18 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-Empty set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 104 | kavin      | elango    |
-| 105 | kavin      | elango    |
-| 106 | kavin      | elango    |
-| 107 | kavin      | elango    |
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 110 | kavin      | elango    |
-| 111 | kavin      | elango    |
-| 112 | kavin      | elango    |
-| 113 | kavin      | elango    |
-| 114 | kavin      | elango    |
-| 115 | kavin      | elango    |
-+-----+------------+-----------+
-12 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 104 | kavin      | elango    |
-| 105 | kavin      | elango    |
-| 106 | kavin      | elango    |
-| 107 | kavin      | elango    |
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 110 | kavin      | elango    |
-| 111 | kavin      | elango    |
-| 112 | kavin      | elango    |
-| 114 | kavin      | elango    |
-| 115 | kavin      | elango    |
-+-----+------------+-----------+
-11 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 104 | kavin      | elango    |
-| 105 | kavin      | elango    |
-| 106 | kavin      | elango    |
-| 107 | kavin      | elango    |
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 110 | kavin      | elango    |
-| 111 | kavin      | elango    |
-| 112 | kavin      | elango    |
-| 114 | kavin      | elango    |
-| 115 | kavin      | elango    |
-+-----+------------+-----------+
-11 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 104 | kavin      | elango    |
-| 105 | kavin      | elango    |
-| 106 | kavin      | elango    |
-| 107 | kavin      | elango    |
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 110 | kavin      | elango    |
-| 111 | kavin      | elango    |
-| 112 | kavin      | elango    |
-| 114 | kavin      | elango    |
-+-----+------------+-----------+
-10 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 104 | kavin      | elango    |
-| 105 | kavin      | elango    |
-| 106 | kavin      | elango    |
-| 107 | kavin      | elango    |
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 110 | kavin      | elango    |
-| 111 | kavin      | elango    |
-| 114 | kavin      | elango    |
-+-----+------------+-----------+
-9 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 104 | kavin      | elango    |
-| 105 | kavin      | elango    |
-| 106 | kavin      | elango    |
-| 107 | kavin      | elango    |
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 110 | kavin      | elango    |
-| 114 | kavin      | elango    |
-+-----+------------+-----------+
-8 rows in set (0.000 sec)
-
-MariaDB [student_details]> desc marks;
-+------------+---------+------+-----+---------+-------+
-| Field      | Type    | Null | Key | Default | Extra |
-+------------+---------+------+-----+---------+-------+
-| tamil      | int(11) | NO   |     | NULL    |       |
-| english    | int(11) | NO   |     | NULL    |       |
-| maths      | int(11) | NO   |     | NULL    |       |
-| student_id | int(11) | YES  | MUL | NULL    |       |
-+------------+---------+------+-----+---------+-------+
-4 rows in set (0.016 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (110,40,80,100),
-    -> (104,80,55,66),
-    -> (107,90,22,33);
-Query OK, 3 rows affected (0.003 sec)
-Records: 3  Duplicates: 0  Warnings: 0
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    40 |      80 |   100 |        110 |
-|    80 |      55 |    66 |        104 |
-|    90 |      22 |    33 |        107 |
-+-------+---------+-------+------------+
-3 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 105 | kavin      | elango    |
-| 106 | kavin      | elango    |
-| 107 | kavin      | elango    |
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 110 | kavin      | elango    |
-| 114 | kavin      | elango    |
-+-----+------------+-----------+
-7 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    40 |      80 |   100 |        110 |
-|    90 |      22 |    33 |        107 |
-+-------+---------+-------+------------+
-2 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-Empty set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 105 | kavin      | elango    |
-| 106 | kavin      | elango    |
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 114 | kavin      | elango    |
-+-----+------------+-----------+
-5 rows in set (0.001 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (105,40,80,100),
-    -> (106,80,55,66),
-    -> (108,90,80,100);
-Query OK, 3 rows affected (0.002 sec)
-Records: 3  Duplicates: 0  Warnings: 0
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    40 |      80 |   100 |        105 |
-|    90 |      80 |   100 |        108 |
-+-------+---------+-------+------------+
-2 rows in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    90 |      80 |   100 |        108 |
-+-------+---------+-------+------------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> (104,80,55,66);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '104,80,55,66)' at line 2
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 108 | kavin      | elango    |
-| 109 | kavin      | elango    |
-| 114 | kavin      | elango    |
-+-----+------------+-----------+
-3 rows in set (0.000 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> (109,80,55,66);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '109,80,55,66)' at line 2
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (109,80,55,66);
-Query OK, 1 row affected (0.002 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    90 |      80 |   100 |        108 |
-+-------+---------+-------+------------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 108 | kavin      | elango    |
-| 114 | kavin      | elango    |
-+-----+------------+-----------+
-2 rows in set (0.000 sec)
-
-MariaDB [student_details]> select from students where id == 108;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from students where id == 108' at line 1
-MariaDB [student_details]> select from students where id = 108;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from students where id = 108' at line 1
-MariaDB [student_details]> select first_name from students where id = 108;
-+------------+
-| first_name |
-+------------+
-| kavin      |
-+------------+
-1 row in set (0.002 sec)
-
-MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
-+------------+-------------+
-| student_id | student_sum |
-+------------+-------------+
-|        108 |         270 |
-+------------+-------------+
-1 row in set (0.001 sec)
-
-MariaDB [student_details]> select * from marks;
-+-------+---------+-------+------------+
-| tamil | english | maths | student_id |
-+-------+---------+-------+------------+
-|    90 |      80 |   100 |        108 |
-+-------+---------+-------+------------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 3
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 108 | kavin      | elango    |
-| 114 | kavin      | elango    |
-| 116 | david      | chris     |
-| 117 | david      | chris     |
-| 118 | david      | chris     |
-| 119 | david      | chris     |
-| 120 | david      | chris     |
-| 121 | david      | chris     |
-| 122 | david      | chris     |
-| 123 | david      | chris     |
-| 124 | david      | chris     |
-| 125 | david      | chris     |
-| 126 | david      | chris     |
-| 127 | david      | chris     |
-| 128 | david      | chris     |
-| 129 | david      | chris     |
-| 130 | david      | chris     |
-+-----+------------+-----------+
-17 rows in set (0.000 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (114,70,89,99),
-    -> (115,70,89,09),
-    -> (116,70,89,40),
-    -> (117,70,59,40),
-    -> (118,60,59,40),
-    -> (119,60,59,40);
-ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`student_details`.`marks`, CONSTRAINT `marks_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE)
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (114,70,89,99),
-    -> (115,70,89,9),
-    -> (116,70,89,40),
-    -> (117,70,59,40),
-    -> (118,60,59,40),
-    -> (119,60,59,40);
-ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`student_details`.`marks`, CONSTRAINT `marks_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE)
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    ->
-    -> (114,70,89,99),
-    -> (116,70,89,40),
-    -> (117,70,59,40),
-    -> (118,60,59,40),
-    -> (119,60,59,40);
-Query OK, 5 rows affected (0.002 sec)
-Records: 5  Duplicates: 0  Warnings: 0
-
-MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
-+------------+-------------+
-| student_id | student_sum |
-+------------+-------------+
-|        108 |         270 |
-|        114 |         258 |
-|        116 |         199 |
-|        117 |         169 |
-|        118 |         159 |
-|        119 |         159 |
-+------------+-------------+
-6 rows in set (0.001 sec)
-
-MariaDB [student_details]> select students.first_name,marks.student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
-ERROR 1054 (42S22): Unknown column 'students.first_name' in 'field list'
-MariaDB [student_details]> select marks.student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
-+------------+-------------+
-| student_id | student_sum |
-+------------+-------------+
-|        108 |         270 |
-|        114 |         258 |
-|        116 |         199 |
-|        117 |         169 |
-|        118 |         159 |
-|        119 |         159 |
-+------------+-------------+
-6 rows in set (0.000 sec)
-
-MariaDB [student_details]> select students.first_name from students,marks.student_id,SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER BY(student_sum) DESC;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SUM(tamil+english+maths) AS student_sum from marks GROUP BY(student_id) ORDER...' at line 1
-MariaDB [student_details]> select student_id,SUM(tamil+english+maths) AS TOTAL GROUP BY(student_id) ORDER BY(TOTAL) where TOTAL>250;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'where TOTAL>250' at line 1
-MariaDB [student_details]> SELECT student_id,SUM(tamil+english+maths) AS TOTAL_MARKS,RANK() OVER (ORDER BY(tamil+english+maths)DESC) as STATUS FROM marks GROUP BY student_id ORDER BY RANK;
-ERROR 1054 (42S22): Unknown column 'RANK' in 'order clause'
-MariaDB [student_details]> SELECT student_id,SUM(tamil+english+maths) AS TOTAL_MARKS,RANK() OVER (ORDER BY(tamil+english+maths)DESC) as STATUS FROM marks GROUP BY student_id ORDER BY STATUS;
-+------------+-------------+--------+
-| student_id | TOTAL_MARKS | STATUS |
-+------------+-------------+--------+
-|        108 |         270 |      1 |
-|        114 |         258 |      2 |
-|        116 |         199 |      3 |
-|        117 |         169 |      4 |
-|        118 |         159 |      5 |
-|        119 |         159 |      5 |
-+------------+-------------+--------+
-6 rows in set (0.002 sec)
-
-MariaDB [student_details]> UPDATE marks
-    -> SET tamil = <new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
-    -> WHERE student_id IN (
-    ->   SELECT id
-    ->   FROM students
-    ->   WHERE first_name = '<desired_first_name>'
-    -> );
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '<new_tamil_mark>, english = <new_english_mark>, maths = <new_maths_mark>
-WHER...' at line 2
-MariaDB [student_details]> desc students;
-+------------+-------------+------+-----+---------+----------------+
-| Field      | Type        | Null | Key | Default | Extra          |
-+------------+-------------+------+-----+---------+----------------+
-| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
-| first_name | varchar(20) | NO   |     | NULL    |                |
-| last_name  | varchar(20) | NO   |     | NULL    |                |
-+------------+-------------+------+-----+---------+----------------+
-3 rows in set (0.010 sec)
-
-MariaDB [student_details]> desc marks;
-+------------+---------+------+-----+---------+-------+
-| Field      | Type    | Null | Key | Default | Extra |
-+------------+---------+------+-----+---------+-------+
-| tamil      | int(11) | NO   |     | NULL    |       |
-| english    | int(11) | NO   |     | NULL    |       |
-| maths      | int(11) | NO   |     | NULL    |       |
-| student_id | int(11) | YES  | MUL | NULL    |       |
-+------------+---------+------+-----+---------+-------+
-4 rows in set (0.009 sec)
-
-MariaDB [student_details]> drop table marks;
-Query OK, 0 rows affected (0.040 sec)
-
-MariaDB [student_details]> create table marks(
-    ->     -> student_id INT,
-    ->     -> FOREIGN KEY(student_id) REFERENCES students(id),
-    ->     -> tamil INT NOT NULL,
-    ->     -> english INT NOT NULL,
-    ->     -> maths INT NOT NULL);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '-> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-  ...' at line 2
-MariaDB [student_details]> create table marks(
-    -> id INT PRIMARY KEY AUTO INCREMENT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    ->     -> tamil INT NOT NULL,
-    -> ;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
-FOREIGN KEY(student_id) REFERENCES students(id),
-    -> tamil...' at line 2
-MariaDB [student_details]> create table marks(
-    -> id INT PRIMARY KEY AUTO INCREMENT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> FOREIGN KEY(student_id) REFERENCES students(id),;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
-FOREIGN KEY(student_id) REFERENCES students(id),
-FOREIGN KEY(...' at line 2
-MariaDB [student_details]> create table marks(
-    -> id INT PRIMARY KEY AUTO INCREMENT,
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
-student_id INT,
-FOREIGN KEY(student_id) REFERENCES students(id),' at line 2
-MariaDB [student_details]> create table marks(
-    -> id INT PRIMARY KEY AUTO INCREMENT,
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
-student_id INT,
-FOREIGN KEY(student_id) REFERENCES students(i...' at line 2
-MariaDB [student_details]> create table marks(
-    -> id INT PRIMARY KEY AUTOINCREMENT,
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
-student_id INT,
-FOREIGN KEY(student_id) REFERENCES students(id),
-tamil INT N...' at line 2
-MariaDB [student_details]> create table marks(
-    -> ID INT PRIMARY KEY AUTO INCREMENT,
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'AUTO INCREMENT,
-student_id INT,
-FOREIGN KEY(student_id) REFERENCES students(i...' at line 2
-MariaDB [student_details]> create table marks(
-    -> ID INT PRIMARY KEY AUTOINCREMENT,
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
-student_id INT,
-FOREIGN KEY(student_id) REFERENCES students(id),
-tamil INT N...' at line 2
-MariaDB [student_details]> create table marks(
-    -> ID INT PRIMARY KEY AUTO_INCREMENT,
-    -> student_id INT,
-    -> FOREIGN KEY(student_id) REFERENCES students(id),
-    -> tamil INT NOT NULL,
-    -> english INT NOT NULL,
-    -> maths INT NOT NULL);
-Query OK, 0 rows affected (0.035 sec)
-
-MariaDB [student_details]> desc marks;
-+------------+---------+------+-----+---------+----------------+
-| Field      | Type    | Null | Key | Default | Extra          |
-+------------+---------+------+-----+---------+----------------+
-| ID         | int(11) | NO   | PRI | NULL    | auto_increment |
-| student_id | int(11) | YES  | MUL | NULL    |                |
-| tamil      | int(11) | NO   |     | NULL    |                |
-| english    | int(11) | NO   |     | NULL    |                |
-| maths      | int(11) | NO   |     | NULL    |                |
-+------------+---------+------+-----+---------+----------------+
-5 rows in set (0.016 sec)
-
-MariaDB [student_details]> insert into marks(student_id,tamil,english,maths)
-    -> values
-    -> (116,70,56,45);
-Query OK, 1 row affected (0.003 sec)
-
-MariaDB [student_details]> select * from students;
-+-----+------------+-----------+
-| id  | first_name | last_name |
-+-----+------------+-----------+
-| 108 | kavin      | elango    |
-| 114 | kavin      | elango    |
-| 116 | david      | chris     |
-| 117 | david      | chris     |
-| 118 | david      | chris     |
-| 119 | david      | chris     |
-| 120 | david      | chris     |
-| 121 | david      | chris     |
-| 122 | david      | chris     |
-| 123 | david      | chris     |
-| 124 | david      | chris     |
-| 125 | david      | chris     |
-| 126 | david      | chris     |
-| 127 | david      | chris     |
-| 128 | david      | chris     |
-| 129 | david      | chris     |
-| 130 | david      | chris     |
-+-----+------------+-----------+
-17 rows in set (0.001 sec)
-
-MariaDB [student_details]> select * from marks;
-+----+------------+-------+---------+-------+
-| ID | student_id | tamil | english | maths |
-+----+------------+-------+---------+-------+
-|  1 |        116 |    70 |      56 |    45 |
-+----+------------+-------+---------+-------+
-1 row in set (0.000 sec)
-
-MariaDB [student_details]> select * from marks;
-+----+------------+-------+---------+-------+
-| ID | student_id | tamil | english | maths |
-+----+------------+-------+---------+-------+
-|  1 |        116 |    70 |      56 |    45 |
-+----+------------+-------+---------+-------+
-1 row in set (0.001 sec)
-
-
-
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
-
-// Import the required models
-const Student = require('./models').Student; // Replace './models' with the actual path to your Sequelize models
-
-// Function to fetch students by category
-const getStudentsByCategory = async (category) => {
-    let minTotalMarks, maxTotalMarks;
-
-    // Determine the total mark range based on the requested category
-    if (category === 'good') {
-        minTotalMarks = 250;
-        maxTotalMarks = 280;
-    } else if (category === 'average') {
-        minTotalMarks = 180;
-        maxTotalMarks = 250;
-    } else if (category === 'excellence') {
-        minTotalMarks = 280;
-        maxTotalMarks = Infinity;
-    } else {
-        throw new Error('Invalid category');
+const express = require('express')
+const app = express()
+const details = require('../dao/operation');
+const responseText = require('../responseText')
+
+app.use(express.json())
+const showStudents = async (req, res) => {
+    let detail = await details.getStudents();
+    if (detail && detail.length > 0) {
+        return res.send({...responseText.studentsFetchedSuccessfully,data:detail});    }
+    else {
+        return res.send(responseText.noDataToFetch)
     }
-
+    
+};
+const getOne = async (req, res) => {
+    const id = req.query.id;
+    let detail = await details.getStudentsById(id);
     try {
-        const students = await Student.findAll({
-            attributes: [
-                'student_id',
-                [
-                    Sequelize.literal('SUM(tamil + english + maths)'),
-                    'total_mark',
-                ],
-            ],
-            group: 'student_id',
-            having: Sequelize.literal(
-                `total_mark >= ${minTotalMarks} && total_mark < ${maxTotalMarks}`
-            ),
-        });
+        if (detail) {
+           return res.send({...responseText.getOneStudent,data:detail})
+        }
+        else {
+            return res.send({...responseText.noDataToFetch})
+        }
+    } 
+    catch (err) {
+        res
+        .status(500)
+        // .json(responseText.catchOne)
+    }
+    
+};
+const create = async (req, res) => {
+    const { fname, lname, marks, email } = req.body;
+    try {
+       
+        if (!fname) {
+            res.status(500).json(responseText.noFirst);
+        }
+        if (!email) {
+            res.status(500).json(responseText.noEmail);
+        }
+        await details.createDetails(fname, lname, email, marks);
+    res.status(201).json({
+      student: {
+        fname,
+        lname,
+        email,
+      },
+      marks,
+      Message: "Student name with their marks created successfully",
+    });
+    }
+    catch (err) {
+        if (err.message === "Email should be unique.") {
+            return res.status(400).json({ Message: err.message });
+          }
+      
+        res
+        .status(500)
+        .json({ message: "Error in invocation of API: /create" })
+    }
+    await details.createDetails(fname, lname, email, marks)
+};
 
-        return students;
-    } catch (error) {
-        throw error;
+const destroy = async (req, res) => {
+
+    const id = req.query.id;
+    try {
+        let detail = await details.deleteById(id)
+        if (detail) {
+           return res.send({...responseText.deleted,count : detail})
+        }
+        else {
+           return res.send(responseText.noDataToDelete)
+        }
+    } catch (err) {
+       res
+            .status(500)
+            .json({ message: "Error in invocation of API: /delete" })
     }
 };
 
-// Route to fetch students based on category
-app.get('/getStudents', async (req, res) => {
-    const { category } = req.query;
-
+const updateDetails = async (req, res) => {
+    const { email, updatedMarks, updateName } = req.body;
     try {
-        if (!category || !['good', 'average', 'excellence'].includes(category)) {
-            return res.status(400).json({ error: 'Invalid category' });
+        if (email) { res.status(200).json({ message: 'Marks updated successfully' }); }
+        if (!email) {
+            res.status(500).json({
+                Message: "Please provide the email of the student to update the marks"
+            });
+        }
+    }
+    catch (err) {
+        res
+        .status(500)
+        .json({ message: "Error in invocation of API: /update" })
+    }
+    await details.updateMarks(email, updatedMarks, updateName);
+};
+
+const category = async (req, res) => {
+    try {
+        const categories = ['good', 'average', 'excellence'];
+        const allStudents = {};
+
+        for (const category of categories) {
+            const students = await details.getStudentsByCategory(category);
+            allStudents[category] = students;
         }
 
-        const students = await getStudentsByCategory(category);
-        if (students && students.length > 0) {
-            res.json({
-                data: students,
-                message: 'Students data fetched successfully',
-                code: 200,
-            });
-        } else {
-            res.json({
+        const isEmpty = Object.values(allStudents).every((students) => students.length === 0);
+        if (isEmpty) {
+            return res.json({
                 message: 'There are no students to fetch from the database',
                 data: null,
             });
         }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal server error' });
+
+        res.json({
+            data: allStudents,
+            message: 'Students data fetched successfully',
+            code: 200,
+        });
+    } catch (err) {
+       res
+            .status(500)
+            .json({ message: "Error in invocation of API: /category" })
     }
-});
+};
+
+module.exports = {
+    showStudents: showStudents,
+    getOne: getOne,
+    destroy: destroy,
+    updateDetails: updateDetails,
+    category: category,
+    create: create
+};
+...........................................................response.js
+module.exports = {
+    studentsFetchedSuccessfully: {
+      message: "Students name fetched successfully",
+      code: 200,
+    },
+    noDataToFetch: {
+      message: "There is no data to fetch from the database",
+      data: null,
+    },
+    getOneStudent: {
+        message: "Detail of the student fetched successfully.....",
+        data: null,
+      },
+      noOneStudent: {
+        message: "There is no student ID to get that students details",
+        data: null,
+      },
+      deleted:{
+        message: "Student's details has been Deleted successfully"
+      },
+      noDataToDelete:{
+        message: "Please give the existing student's Id to delete"
+      },
+      catchOne:{
+        message:"Error in invocation of API: /getOne"
+      },
+      noFirst:{
+        message:"The firstName of the student cannot be empty"
+      },
+      noEmail:{
+        Message: "The email-id of the student cannot be empty"
+    }
+
+}
+...................................responseText.js
+const { studentsDetails, Marks } = require('../models/db-details')
+const { Sequelize } = require('sequelize')
+const { Op } = require('sequelize');
+
+//To Get data of all the students
+const getStudents = async (res) => {
+  try {
+    let result = await (studentsDetails).findAll({
+      include: Marks,
+    })
+    return JSON.parse(JSON.stringify(result));
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error Occured on getStudents()" })
+  }
+}
+
+//To Get data of a particular the students
+
+const getStudentsById = async (id,res) => {
+  try {
+    let result = await studentsDetails.findOne({
+      where: { id: id },
+      include: [Marks],
+    })
+    return JSON.parse(JSON.stringify(result));
+  } catch (err) {
+    throw err;
+  }
+}
+
+//To Create a new student details into the database
+
+const createDetails = async (fname, lname, email, marks,res) => {
+  try {
+    const student = await studentsDetails.create({
+      first_name: fname,
+      last_name: lname,
+      email_id: email
+    });
+
+    const newMarksData = await Marks.create({
+      tamil: marks.tamil,
+      english: marks.english,
+      maths: marks.maths,
+      student_id: student.id
+    });
+    return JSON.parse(JSON.stringify(newMarksData));
+  } catch (err) {
+    console.log("-------------",err)
+    if (err.name === "SequelizeUniqueConstraintError") {
+      throw new Error("Email should be unique.");
+    }
+
+    throw err;// Re-throw other errors
+  }
+};
+
+//To Update the mark of the existing student by using the first name of the student
+
+const updateMarks = async (email, updatedMarks, updateName,res) => {
+  try {
+    const student = await studentsDetails.findOne({
+      where: { email_id: email },
+    });
+    if (student) {
+      await studentsDetails.update(updateName, {
+        where: { email_id: email },
+      });
+      await Marks.update(updatedMarks, {
+        where: { student_id: student.id },
+      });
+    }
+  } catch (err) {
+    console.log("Error occurred on update()",err)
+    // res
+    //   .status(500)
+    //   .json({ message: "Error Occured on updateMarks()" })
+  }
+}
+
+
+const deleteById = async (id,res) => {
+  try {
+    let result = await studentsDetails.destroy({
+      include: [
+        {
+          model: studentsDetails,
+        },
+      ],
+      where: { id: id },
+    })
+    return JSON.parse(JSON.stringify(result));
+  }
+  catch (err) {
+   throw err;
+  }
+}
+
+
+
+
+const getStudentsByCategory = async (category,res) => {
+  let minTotalMarks, maxTotalMarks;
+
+  if (category === 'good') {
+    minTotalMarks = 250;
+    maxTotalMarks = 280;
+  } else if (category === 'average') {
+    minTotalMarks = 180;
+    maxTotalMarks = 250;
+  } else if (category === 'excellence') {
+    minTotalMarks = 280;
+    maxTotalMarks = 301; 
+  } 
+
+  try {
+    const students = await Marks.findAll({
+     
+      include: [
+        {
+          model: studentsDetails,
+        },
+      ],
+      attributes: [
+
+        'student_id',
+        [
+          Sequelize.literal('SUM(tamil + english + maths)'),
+          'total_mark',
+        ],
+      ],
+      group: 'student_id',
+      having: {
+        total_mark: {
+          [Op.gte]: minTotalMarks,
+          [Op.lt]: maxTotalMarks,
+        },
+      },
+    });
+    const studentsWithCategory = students.map((student) => {
+      return {
+        ...student.toJSON(),
+        category,
+      };
+    });
+
+    return studentsWithCategory;
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error Occured on getStudentsByCategory()" })
+  }
+};
+
+
+
+module.exports = {
+  getStudents: getStudents,
+  getStudentsById: getStudentsById,
+  deleteById: deleteById,
+  getStudentsByCategory: getStudentsByCategory,
+  createDetails: createDetails,
+  updateMarks: updateMarks,
+
+}
+............................................operation.js
