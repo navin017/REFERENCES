@@ -1,1 +1,47 @@
+To create procedure /////////////////////////
 
+MariaDB [student_details]> DELIMITER &&
+MariaDB [student_details]> CREATE PROCEDURE selectStudents ()
+    -> BEGIN
+    -> SELECT * FROM students;
+    -> END &&
+Query OK, 0 rows affected (0.013 sec)
+
+To call Procedure //////////////////////////
+
+CALL selectStudents ();
+
+...................................................................
+EXAMPLE;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+MariaDB [student_details]> DELIMITER &&
+MariaDB [student_details]> CREATE PROCEDURE count_List(IN var1 INT)
+    -> BEGIN
+    -> SELECT * FROM students LIMIT var1;
+    -> SELECT COUNT(id)AS total_student FROM students;
+    -> END&&
+Query OK, 0 rows affected (0.009 sec)
+
+//////////////////////////////
+
+call count_List(5);
+
++-----+------------+-----------+---------------------------+
+| id  | first_name | last_name | email_id                  |
++-----+------------+-----------+---------------------------+
+|  55 | jhon       | elano     | navin1@gamil.com          |
+| 145 | naveen     | vignesh   | naveenelango018@gmail.com |
+| 185 | navee      |           | sample103@gmail.com       |
+| 187 | navee      | elang     | sample1003@gmail.com      |
+| 190 | navee      | elang     | sampl3@gmail.com          |
++-----+------------+-----------+---------------------------+
+5 rows in set (0.001 sec)
+
++---------------+
+| total_student |
++---------------+
+|             6 |
++---------------+
+/////////////////////////////////////////////////////////////////////////////////
+
+VIEW,,,,,,,,,,,,,
