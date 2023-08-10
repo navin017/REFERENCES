@@ -11,6 +11,8 @@ To call Procedure //////////////////////////
 
 CALL selectStudents ();
 
+TO VIEW THE STORED PROCEDURE..............................................--------------------====++++
+select routine_name, routine_type,definer,created,security_type,SQL_Data_Access from information_schema.routines where routine_type='PROCEDURE' and routine_schema='sakila';
 ...................................................................
 EXAMPLE;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
